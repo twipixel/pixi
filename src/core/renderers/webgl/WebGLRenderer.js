@@ -67,6 +67,8 @@ export default class WebGLRenderer extends SystemRenderer
         {
             glCore.VertexArrayObject.FORCE_NATIVE = true;
         }
+        
+        console.log('glCore', glCore);
 
         /**
          * The type of this renderer as a standardised const
