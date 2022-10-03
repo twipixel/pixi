@@ -1,3 +1,4 @@
+import glCore from 'pixi-gl-core';
 import SystemRenderer from '../SystemRenderer';
 import MaskManager from './managers/MaskManager';
 import StencilManager from './managers/StencilManager';
@@ -11,7 +12,6 @@ import WebGLState from './WebGLState';
 import mapWebGLDrawModesToPixi from './utils/mapWebGLDrawModesToPixi';
 import validateContext from './utils/validateContext';
 import { pluginTarget } from '../../utils';
-import glCore from 'pixi-gl-core';
 import { RENDERER_TYPE } from '../../const';
 
 let CONTEXT_UID = 0;
@@ -64,8 +64,6 @@ export default class WebGLRenderer extends SystemRenderer {
     if (this.legacy) {
       glCore.VertexArrayObject.FORCE_NATIVE = true;
     }
-
-    console.log('glCore', glCore);
 
     /**
      * The type of this renderer as a standardised const
@@ -233,7 +231,7 @@ export default class WebGLRenderer extends SystemRenderer {
    * @private
    */
   _initContext() {
-    const gl = this.gl;
+    const { gl } = this;
 
     // restore a context if it was previously lost
     if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context')) {
@@ -428,7 +426,7 @@ export default class WebGLRenderer extends SystemRenderer {
    * @return {PIXI.WebGLRenderer} Returns itself.
    */
   clearRenderTexture(renderTexture, clearColor) {
-    const baseTexture = renderTexture.baseTexture;
+    const { baseTexture } = renderTexture;
     const renderTarget = baseTexture._glRenderTargets[this.CONTEXT_UID];
 
     if (renderTarget) {
@@ -449,7 +447,7 @@ export default class WebGLRenderer extends SystemRenderer {
     let renderTarget;
 
     if (renderTexture) {
-      const baseTexture = renderTexture.baseTexture;
+      const { baseTexture } = renderTexture;
 
       if (!baseTexture._glRenderTargets[this.CONTEXT_UID]) {
         // bind the current texture
@@ -551,7 +549,7 @@ export default class WebGLRenderer extends SystemRenderer {
       location = location || 0;
     }
 
-    const gl = this.gl;
+    const { gl } = this;
     const glTexture = texture._glTextures[this.CONTEXT_UID];
 
     if (!glTexture) {
@@ -574,7 +572,7 @@ export default class WebGLRenderer extends SystemRenderer {
    * @return {PIXI.WebGLRenderer} Returns itself.
    */
   unbindTexture(texture) {
-    const gl = this.gl;
+    const { gl } = this;
 
     texture = texture.baseTexture || texture;
 

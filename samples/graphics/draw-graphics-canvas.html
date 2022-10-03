@@ -7,16 +7,16 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>Graphics/DrawGraphics</title>
+    <title>Graphics/DrawGraphicsCanvas</title>
     <script type="text/javascript" src="../../dist/pixi.js"></script>
   </head>
   <body>
     <div id="wrap" class="section">
       <a href="../index.html" class="back">Back to front</a><br /><br />
-      <h2>DrawGraphics</h2>
+      <h2>Draw Graphics Canvas</h2>
     </div>
     <script>
-      const app = new PIXI.Application({ antialias: true });
+      const app = new PIXI.Application({ antialias: true, forceCanvas: true });
       document.body.appendChild(app.view);
 
       const graphics = new PIXI.Graphics();
