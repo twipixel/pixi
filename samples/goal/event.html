@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>EventDispatcher</title>
+  </head>
+  <body>
+    <div id="wrap" class="section">
+      <a href="../index.html" class="back">Back to front</a><br /><br />
+      <h2>EventDispatcher</h2>
+    </div>
+    <script type="module">
+      import EventDispatcher from '../../goal/event/EventDispatcher.js'
+
+      const fire = new EventDispatcher();
+      fire.addEventListener('fire', () => console.log('fire'));
+      setTimeout(() => fire.dispatchEvent({ type: 'fire' }), 1000);
+
+      const click = new EventDispatcher();
+      click.on('click', () => console.log('click'));
+      click.emit({ type: 'click' });
+
+      const flyHandler = () => console.log('fly');
+      const fly = new EventDispatcher();
+      fly.on('fly', flyHandler);
+      fly.emit({ type: 'fly'});
+      fly.emit({ type: 'fly'});
+      fly.off('fly', flyHandler);
+      fly.emit({ type: 'fly'});
+
+      const onceHandler = () => console.log('once');
+      const once = new EventDispatcher();
+      once.once('once', onceHandler);
+      once.dispatchEvent({ type: 'once' });
+      once.dispatchEvent({ type: 'once' });
+
+      const overHandler = () => console.log('over');
+      const over = new EventDispatcher();
+      over.addEventListener('over', overHandler);
+      over.dispatchEvent({ type: 'over' });
+      over.dispatchEvent({ type: 'over' });
+      over.removeEventListener('over', overHandler);
+      over.dispatchEvent({ type: 'over' });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+import { EventDispatcher } from '../event/EventDispatcher';
+
+
+export default class DisplayObject extends EventDispatcher {
+  constructor() {
+    super();
+  }
+}
