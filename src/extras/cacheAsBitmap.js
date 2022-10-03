@@ -16,110 +16,100 @@ DisplayObject.prototype._cacheData = false;
  * @class
  * @ignore
  */
-class CacheData
-{
-    /**
-     *
-     */
-    constructor()
-    {
-        this.textureCacheId = null;
+class CacheData {
+  /**
+   *
+   */
+  constructor() {
+    this.textureCacheId = null;
 
-        this.originalRenderWebGL = null;
-        this.originalRenderCanvas = null;
-        this.originalCalculateBounds = null;
-        this.originalGetLocalBounds = null;
+    this.originalRenderWebGL = null;
+    this.originalRenderCanvas = null;
+    this.originalCalculateBounds = null;
+    this.originalGetLocalBounds = null;
 
-        this.originalUpdateTransform = null;
-        this.originalHitTest = null;
-        this.originalDestroy = null;
-        this.originalMask = null;
-        this.originalFilterArea = null;
-        this.sprite = null;
-    }
+    this.originalUpdateTransform = null;
+    this.originalHitTest = null;
+    this.originalDestroy = null;
+    this.originalMask = null;
+    this.originalFilterArea = null;
+    this.sprite = null;
+  }
 }
 
 Object.defineProperties(DisplayObject.prototype, {
-    /**
-     * Set this to true if you want this display object to be cached as a bitmap.
-     * This basically takes a snap shot of the display object as it is at that moment. It can
-     * provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'false'
-     *
-     * IMPORTANT GOTCHA - make sure that all your textures are preloaded BEFORE setting this property to true
-     * as it will take a snapshot of what is currently there. If the textures have not loaded then they will not appear.
-     *
-     * @member {boolean}
-     * @memberof PIXI.DisplayObject#
-     */
-    cacheAsBitmap: {
-        get()
-        {
-            return this._cacheAsBitmap;
-        },
-        set(value)
-        {
-            if (this._cacheAsBitmap === value)
-            {
-                return;
-            }
-
-            this._cacheAsBitmap = value;
-
-            let data;
-
-            if (value)
-            {
-                if (!this._cacheData)
-                {
-                    this._cacheData = new CacheData();
-                }
-
-                data = this._cacheData;
-
-                data.originalRenderWebGL = this.renderWebGL;
-                data.originalRenderCanvas = this.renderCanvas;
-
-                data.originalUpdateTransform = this.updateTransform;
-                data.originalCalculateBounds = this._calculateBounds;
-                data.originalGetLocalBounds = this.getLocalBounds;
-
-                data.originalDestroy = this.destroy;
-
-                data.originalContainsPoint = this.containsPoint;
-
-                data.originalMask = this._mask;
-                data.originalFilterArea = this.filterArea;
-
-                this.renderWebGL = this._renderCachedWebGL;
-                this.renderCanvas = this._renderCachedCanvas;
-
-                this.destroy = this._cacheAsBitmapDestroy;
-            }
-            else
-            {
-                data = this._cacheData;
-
-                if (data.sprite)
-                {
-                    this._destroyCachedDisplayObject();
-                }
-
-                this.renderWebGL = data.originalRenderWebGL;
-                this.renderCanvas = data.originalRenderCanvas;
-                this._calculateBounds = data.originalCalculateBounds;
-                this.getLocalBounds = data.originalGetLocalBounds;
-
-                this.destroy = data.originalDestroy;
-
-                this.updateTransform = data.originalUpdateTransform;
-                this.containsPoint = data.originalContainsPoint;
-
-                this._mask = data.originalMask;
-                this.filterArea = data.originalFilterArea;
-            }
-        },
+  /**
+   * Set this to true if you want this display object to be cached as a bitmap.
+   * This basically takes a snap shot of the display object as it is at that moment. It can
+   * provide a performance benefit for complex static displayObjects.
+   * To remove simply set this property to 'false'
+   *
+   * IMPORTANT GOTCHA - make sure that all your textures are preloaded BEFORE setting this property to true
+   * as it will take a snapshot of what is currently there. If the textures have not loaded then they will not appear.
+   *
+   * @member {boolean}
+   * @memberof PIXI.DisplayObject#
+   */
+  cacheAsBitmap: {
+    get() {
+      return this._cacheAsBitmap;
     },
+    set(value) {
+      if (this._cacheAsBitmap === value) {
+        return;
+      }
+
+      this._cacheAsBitmap = value;
+
+      let data;
+
+      if (value) {
+        if (!this._cacheData) {
+          this._cacheData = new CacheData();
+        }
+
+        data = this._cacheData;
+
+        data.originalRenderWebGL = this.renderWebGL;
+        data.originalRenderCanvas = this.renderCanvas;
+
+        data.originalUpdateTransform = this.updateTransform;
+        data.originalCalculateBounds = this._calculateBounds;
+        data.originalGetLocalBounds = this.getLocalBounds;
+
+        data.originalDestroy = this.destroy;
+
+        data.originalContainsPoint = this.containsPoint;
+
+        data.originalMask = this._mask;
+        data.originalFilterArea = this.filterArea;
+
+        this.renderWebGL = this._renderCachedWebGL;
+        this.renderCanvas = this._renderCachedCanvas;
+
+        this.destroy = this._cacheAsBitmapDestroy;
+      } else {
+        data = this._cacheData;
+
+        if (data.sprite) {
+          this._destroyCachedDisplayObject();
+        }
+
+        this.renderWebGL = data.originalRenderWebGL;
+        this.renderCanvas = data.originalRenderCanvas;
+        this._calculateBounds = data.originalCalculateBounds;
+        this.getLocalBounds = data.originalGetLocalBounds;
+
+        this.destroy = data.originalDestroy;
+
+        this.updateTransform = data.originalUpdateTransform;
+        this.containsPoint = data.originalContainsPoint;
+
+        this._mask = data.originalMask;
+        this.filterArea = data.originalFilterArea;
+      }
+    },
+  },
 });
 
 /**
@@ -129,18 +119,18 @@ Object.defineProperties(DisplayObject.prototype, {
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
  */
-DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(renderer)
-{
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-    {
-        return;
-    }
+DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(
+  renderer
+) {
+  if (!this.visible || this.worldAlpha <= 0 || !this.renderable) {
+    return;
+  }
 
-    this._initCachedDisplayObject(renderer);
+  this._initCachedDisplayObject(renderer);
 
-    this._cacheData.sprite._transformID = -1;
-    this._cacheData.sprite.worldAlpha = this.worldAlpha;
-    this._cacheData.sprite._renderWebGL(renderer);
+  this._cacheData.sprite._transformID = -1;
+  this._cacheData.sprite.worldAlpha = this.worldAlpha;
+  this._cacheData.sprite._renderWebGL(renderer);
 };
 
 /**
@@ -150,11 +140,10 @@ DisplayObject.prototype._renderCachedWebGL = function _renderCachedWebGL(rendere
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
  */
-DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayObject(renderer)
-{
-    if (this._cacheData && this._cacheData.sprite)
-    {
-        return;
+DisplayObject.prototype._initCachedDisplayObject =
+  function _initCachedDisplayObject(renderer) {
+    if (this._cacheData && this._cacheData.sprite) {
+      return;
     }
 
     // make sure alpha is set to 1 otherwise it will get rendered as invisible!
@@ -173,11 +162,10 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const bounds = this.getLocalBounds().clone();
 
     // add some padding!
-    if (this._filters)
-    {
-        const padding = this._filters[0].padding;
+    if (this._filters) {
+      const padding = this._filters[0].padding;
 
-        bounds.pad(padding);
+      bounds.pad(padding);
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
@@ -188,7 +176,10 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     // this renderTexture will be used to store the cached DisplayObject
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(
+      bounds.width | 0,
+      bounds.height | 0
+    );
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -239,20 +230,17 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
 
     this.transform._parentID = -1;
     // restore the transform of the cached sprite to avoid the nasty flicker..
-    if (!this.parent)
-    {
-        this.parent = renderer._tempDisplayObjectParent;
-        this.updateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.updateTransform();
+    if (!this.parent) {
+      this.parent = renderer._tempDisplayObjectParent;
+      this.updateTransform();
+      this.parent = null;
+    } else {
+      this.updateTransform();
     }
 
     // map the hit test..
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
-};
+  };
 
 /**
  * Renders a cached version of the sprite with canvas
@@ -261,18 +249,18 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
  */
-DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer)
-{
-    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-    {
-        return;
-    }
+DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(
+  renderer
+) {
+  if (!this.visible || this.worldAlpha <= 0 || !this.renderable) {
+    return;
+  }
 
-    this._initCachedDisplayObjectCanvas(renderer);
+  this._initCachedDisplayObjectCanvas(renderer);
 
-    this._cacheData.sprite.worldAlpha = this.worldAlpha;
+  this._cacheData.sprite.worldAlpha = this.worldAlpha;
 
-    this._cacheData.sprite.renderCanvas(renderer);
+  this._cacheData.sprite.renderCanvas(renderer);
 };
 
 // TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
@@ -283,11 +271,10 @@ DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(rende
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.WebGLRenderer} renderer - the WebGL renderer
  */
-DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDisplayObjectCanvas(renderer)
-{
-    if (this._cacheData && this._cacheData.sprite)
-    {
-        return;
+DisplayObject.prototype._initCachedDisplayObjectCanvas =
+  function _initCachedDisplayObjectCanvas(renderer) {
+    if (this._cacheData && this._cacheData.sprite) {
+      return;
     }
 
     // get bounds actually transforms the object for us already!
@@ -299,7 +286,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const cachedRenderTarget = renderer.context;
 
-    const renderTexture = core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
+    const renderTexture = core.RenderTexture.create(
+      bounds.width | 0,
+      bounds.height | 0
+    );
 
     const textureCacheId = `cacheAsBitmap_${uid()}`;
 
@@ -318,7 +308,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     m.ty -= bounds.y;
 
     // m.append(this.transform.worldTransform.)
-     // set all properties to there original so we can render to a texture
+    // set all properties to there original so we can render to a texture
     this.renderCanvas = this._cacheData.originalRenderCanvas;
 
     // renderTexture.render(this, m, true);
@@ -342,15 +332,12 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     cachedSprite._bounds = this._bounds;
     cachedSprite.alpha = cacheAlpha;
 
-    if (!this.parent)
-    {
-        this.parent = renderer._tempDisplayObjectParent;
-        this.updateTransform();
-        this.parent = null;
-    }
-    else
-    {
-        this.updateTransform();
+    if (!this.parent) {
+      this.parent = renderer._tempDisplayObjectParent;
+      this.updateTransform();
+      this.parent = null;
+    } else {
+      this.updateTransform();
     }
 
     this.updateTransform = this.displayObjectUpdateTransform;
@@ -358,17 +345,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     this._cacheData.sprite = cachedSprite;
 
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
-};
+  };
 
 /**
  * Calculates the bounds of the cached sprite
  *
  * @private
  */
-DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds()
-{
+DisplayObject.prototype._calculateCachedBounds =
+  function _calculateCachedBounds() {
     this._cacheData.sprite._calculateBounds();
-};
+  };
 
 /**
  * Gets the bounds of the cached sprite.
@@ -376,18 +363,18 @@ DisplayObject.prototype._calculateCachedBounds = function _calculateCachedBounds
  * @private
  * @return {Rectangle} The local bounds.
  */
-DisplayObject.prototype._getCachedLocalBounds = function _getCachedLocalBounds()
-{
+DisplayObject.prototype._getCachedLocalBounds =
+  function _getCachedLocalBounds() {
     return this._cacheData.sprite.getLocalBounds();
-};
+  };
 
 /**
  * Destroys the cached sprite.
  *
  * @private
  */
-DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDisplayObject()
-{
+DisplayObject.prototype._destroyCachedDisplayObject =
+  function _destroyCachedDisplayObject() {
     this._cacheData.sprite._texture.destroy(true);
     this._cacheData.sprite = null;
 
@@ -395,7 +382,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
     Texture.removeFromCache(this._cacheData.textureCacheId);
 
     this._cacheData.textureCacheId = null;
-};
+  };
 
 /**
  * Destroys the cached object.
@@ -405,8 +392,9 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  *  have been set to that value.
  *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options)
-{
-    this.cacheAsBitmap = false;
-    this.destroy(options);
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(
+  options
+) {
+  this.cacheAsBitmap = false;
+  this.destroy(options);
 };

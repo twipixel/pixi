@@ -29,24 +29,22 @@ utils.mixins.performMixins();
 const loader = loaders.shared || null;
 
 export {
-    accessibility,
-    extract,
-    extras,
-    filters,
-    interaction,
-    loaders,
-    mesh,
-    particles,
-    prepare,
-    loader,
+  accessibility,
+  extract,
+  extras,
+  filters,
+  interaction,
+  loaders,
+  mesh,
+  particles,
+  prepare,
+  loader,
 };
 
 // Apply the deprecations
-if (typeof deprecation === 'function')
-{
-    deprecation(exports);
+if (typeof deprecation === 'function') {
+  deprecation(exports);
 }
 
 // Always export PixiJS globally.
 global.PIXI = exports; // eslint-disable-line
-

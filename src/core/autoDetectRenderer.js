@@ -34,20 +34,17 @@ import WebGLRenderer from './renderers/webgl/WebGLRenderer';
  *  for devices with dual graphics card **webgl only**
  * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options, arg1, arg2, arg3)
-{
-    // Backward-compatible support for noWebGL option
-    let forceCanvas = options && options.forceCanvas;
+export function autoDetectRenderer(options, arg1, arg2, arg3) {
+  // Backward-compatible support for noWebGL option
+  let forceCanvas = options && options.forceCanvas;
 
-    if (arg3 !== undefined)
-    {
-        forceCanvas = arg3;
-    }
+  if (arg3 !== undefined) {
+    forceCanvas = arg3;
+  }
 
-    if (!forceCanvas && utils.isWebGLSupported())
-    {
-        return new WebGLRenderer(options, arg1, arg2);
-    }
+  if (!forceCanvas && utils.isWebGLSupported()) {
+    return new WebGLRenderer(options, arg1, arg2);
+  }
 
-    return new CanvasRenderer(options, arg1, arg2);
+  return new CanvasRenderer(options, arg1, arg2);
 }

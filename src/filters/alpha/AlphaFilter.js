@@ -19,37 +19,35 @@ import { join } from 'path';
  * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
-export default class AlphaFilter extends core.Filter
-{
-    /**
-     * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent
-     */
-    constructor(alpha = 1.0)
-    {
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './alpha.frag'), 'utf8')
-        );
+export default class AlphaFilter extends core.Filter {
+  /**
+   * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent
+   */
+  constructor(alpha = 1.0) {
+    super(
+      // vertex shader
+      readFileSync(join(__dirname, '../fragments/default.vert'), 'utf8'),
+      // fragment shader
+      readFileSync(join(__dirname, './alpha.frag'), 'utf8')
+    );
 
-        this.alpha = alpha;
-        this.glShaderKey = 'alpha';
-    }
+    this.alpha = alpha;
+    this.glShaderKey = 'alpha';
+  }
 
-    /**
-     * Coefficient for alpha multiplication
-     *
-     * @member {number}
-     * @default 1
-     */
-    get alpha()
-    {
-        return this.uniforms.uAlpha;
-    }
+  /**
+   * Coefficient for alpha multiplication
+   *
+   * @member {number}
+   * @default 1
+   */
+  get alpha() {
+    return this.uniforms.uAlpha;
+  }
 
-    set alpha(value) // eslint-disable-line require-jsdoc
-    {
-        this.uniforms.uAlpha = value;
-    }
+  set alpha(
+    value // eslint-disable-line require-jsdoc
+  ) {
+    this.uniforms.uAlpha = value;
+  }
 }

@@ -15,19 +15,17 @@ import { join } from 'path';
  * @memberof PIXI.filters
  *
  */
-export default class FXAAFilter extends core.Filter
-{
-    /**
-     *
-     */
-    constructor()
-    {
-        // TODO - needs work
-        super(
-            // vertex shader
-            readFileSync(join(__dirname, './fxaa.vert'), 'utf8'),
-            // fragment shader
-            readFileSync(join(__dirname, './fxaa.frag'), 'utf8')
-        );
-    }
+export default class FXAAFilter extends core.Filter {
+  /**
+   *
+   */
+  constructor() {
+    // TODO - needs work
+    super(
+      // vertex shader
+      readFileSync(join(__dirname, './fxaa.vert'), 'utf8'),
+      // fragment shader
+      readFileSync(join(__dirname, './fxaa.frag'), 'utf8')
+    );
+  }
 }

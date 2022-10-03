@@ -7,42 +7,39 @@ import WebGLManager from '../managers/WebGLManager';
  * @extends PIXI.WebGLManager
  * @memberof PIXI
  */
-export default class ObjectRenderer extends WebGLManager
-{
-    /**
-     * Starts the renderer and sets the shader
-     *
-     */
-    start()
-    {
-        // set the shader..
-    }
+export default class ObjectRenderer extends WebGLManager {
+  /**
+   * Starts the renderer and sets the shader
+   *
+   */
+  start() {
+    // set the shader..
+  }
 
-    /**
-     * Stops the renderer
-     *
-     */
-    stop()
-    {
-        this.flush();
-    }
+  /**
+   * Stops the renderer
+   *
+   */
+  stop() {
+    this.flush();
+  }
 
-    /**
-     * Stub method for rendering content and emptying the current batch.
-     *
-     */
-    flush()
-    {
-        // flush!
-    }
+  /**
+   * Stub method for rendering content and emptying the current batch.
+   *
+   */
+  flush() {
+    // flush!
+  }
 
-    /**
-     * Renders an object
-     *
-     * @param {PIXI.DisplayObject} object - The object to render.
-     */
-    render(object) // eslint-disable-line no-unused-vars
-    {
-        // render the object
-    }
+  /**
+   * Renders an object
+   *
+   * @param {PIXI.DisplayObject} object - The object to render.
+   */
+  render(
+    object // eslint-disable-line no-unused-vars
+  ) {
+    // render the object
+  }
 }

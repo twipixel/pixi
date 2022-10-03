@@ -13,85 +13,84 @@ import { hex2rgb } from '../../../utils';
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
-export default function buildCircle(graphicsData, webGLData, webGLDataNativeLines)
-{
-    // need to convert points to a nice regular data
-    const circleData = graphicsData.shape;
-    const x = circleData.x;
-    const y = circleData.y;
-    let width;
-    let height;
+export default function buildCircle(
+  graphicsData,
+  webGLData,
+  webGLDataNativeLines
+) {
+  // need to convert points to a nice regular data
+  const circleData = graphicsData.shape;
+  const x = circleData.x;
+  const y = circleData.y;
+  let width;
+  let height;
 
-    // TODO - bit hacky??
-    if (graphicsData.type === SHAPES.CIRC)
-    {
-        width = circleData.radius;
-        height = circleData.radius;
-    }
-    else
-    {
-        width = circleData.width;
-        height = circleData.height;
-    }
+  // TODO - bit hacky??
+  if (graphicsData.type === SHAPES.CIRC) {
+    width = circleData.radius;
+    height = circleData.radius;
+  } else {
+    width = circleData.width;
+    height = circleData.height;
+  }
 
-    if (width === 0 || height === 0)
-    {
-        return;
-    }
+  if (width === 0 || height === 0) {
+    return;
+  }
 
-    const totalSegs = Math.floor(30 * Math.sqrt(circleData.radius))
-        || Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
+  const totalSegs =
+    Math.floor(30 * Math.sqrt(circleData.radius)) ||
+    Math.floor(15 * Math.sqrt(circleData.width + circleData.height));
 
-    const seg = (Math.PI * 2) / totalSegs;
+  const seg = (Math.PI * 2) / totalSegs;
 
-    if (graphicsData.fill)
-    {
-        const color = hex2rgb(graphicsData.fillColor);
-        const alpha = graphicsData.fillAlpha;
+  if (graphicsData.fill) {
+    const color = hex2rgb(graphicsData.fillColor);
+    const alpha = graphicsData.fillAlpha;
 
-        const r = color[0] * alpha;
-        const g = color[1] * alpha;
-        const b = color[2] * alpha;
+    const r = color[0] * alpha;
+    const g = color[1] * alpha;
+    const b = color[2] * alpha;
 
-        const verts = webGLData.points;
-        const indices = webGLData.indices;
+    const verts = webGLData.points;
+    const indices = webGLData.indices;
 
-        let vecPos = verts.length / 6;
+    let vecPos = verts.length / 6;
 
-        indices.push(vecPos);
+    indices.push(vecPos);
 
-        for (let i = 0; i < totalSegs + 1; i++)
-        {
-            verts.push(x, y, r, g, b, alpha);
+    for (let i = 0; i < totalSegs + 1; i++) {
+      verts.push(x, y, r, g, b, alpha);
 
-            verts.push(
-                x + (Math.sin(seg * i) * width),
-                y + (Math.cos(seg * i) * height),
-                r, g, b, alpha
-            );
+      verts.push(
+        x + Math.sin(seg * i) * width,
+        y + Math.cos(seg * i) * height,
+        r,
+        g,
+        b,
+        alpha
+      );
 
-            indices.push(vecPos++, vecPos++);
-        }
-
-        indices.push(vecPos - 1);
+      indices.push(vecPos++, vecPos++);
     }
 
-    if (graphicsData.lineWidth)
-    {
-        const tempPoints = graphicsData.points;
+    indices.push(vecPos - 1);
+  }
 
-        graphicsData.points = [];
+  if (graphicsData.lineWidth) {
+    const tempPoints = graphicsData.points;
 
-        for (let i = 0; i < totalSegs + 1; i++)
-        {
-            graphicsData.points.push(
-                x + (Math.sin(seg * i) * width),
-                y + (Math.cos(seg * i) * height)
-            );
-        }
+    graphicsData.points = [];
 
-        buildLine(graphicsData, webGLData, webGLDataNativeLines);
-
-        graphicsData.points = tempPoints;
+    for (let i = 0; i < totalSegs + 1; i++) {
+      graphicsData.points.push(
+        x + Math.sin(seg * i) * width,
+        y + Math.cos(seg * i) * height
+      );
     }
+
+    buildLine(graphicsData, webGLData, webGLDataNativeLines);
+
+    graphicsData.points = tempPoints;
+  }
 }

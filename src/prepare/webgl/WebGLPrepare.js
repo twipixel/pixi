@@ -10,22 +10,20 @@ import BasePrepare from '../BasePrepare';
  * @extends PIXI.prepare.BasePrepare
  * @memberof PIXI.prepare
  */
-export default class WebGLPrepare extends BasePrepare
-{
-    /**
-     * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
-     */
-    constructor(renderer)
-    {
-        super(renderer);
+export default class WebGLPrepare extends BasePrepare {
+  /**
+   * @param {PIXI.WebGLRenderer} renderer - A reference to the current renderer
+   */
+  constructor(renderer) {
+    super(renderer);
 
-        this.uploadHookHelper = this.renderer;
+    this.uploadHookHelper = this.renderer;
 
-        // Add textures and graphics to upload
-        this.registerFindHook(findGraphics);
-        this.registerUploadHook(uploadBaseTextures);
-        this.registerUploadHook(uploadGraphics);
-    }
+    // Add textures and graphics to upload
+    this.registerFindHook(findGraphics);
+    this.registerUploadHook(uploadBaseTextures);
+    this.registerUploadHook(uploadGraphics);
+  }
 }
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -35,22 +33,19 @@ export default class WebGLPrepare extends BasePrepare
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function uploadBaseTextures(renderer, item)
-{
-    if (item instanceof core.BaseTexture)
-    {
-        // if the texture already has a GL texture, then the texture has been prepared or rendered
-        // before now. If the texture changed, then the changer should be calling texture.update() which
-        // reuploads the texture without need for preparing it again
-        if (!item._glTextures[renderer.CONTEXT_UID])
-        {
-            renderer.textureManager.updateTexture(item);
-        }
-
-        return true;
+function uploadBaseTextures(renderer, item) {
+  if (item instanceof core.BaseTexture) {
+    // if the texture already has a GL texture, then the texture has been prepared or rendered
+    // before now. If the texture changed, then the changer should be calling texture.update() which
+    // reuploads the texture without need for preparing it again
+    if (!item._glTextures[renderer.CONTEXT_UID]) {
+      renderer.textureManager.updateTexture(item);
     }
 
-    return false;
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -61,21 +56,22 @@ function uploadBaseTextures(renderer, item)
  * @param {PIXI.DisplayObject} item - Item to check
  * @return {boolean} If item was uploaded.
  */
-function uploadGraphics(renderer, item)
-{
-    if (item instanceof core.Graphics)
-    {
-        // if the item is not dirty and already has webgl data, then it got prepared or rendered
-        // before now and we shouldn't waste time updating it again
-        if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID])
-        {
-            renderer.plugins.graphics.updateGraphics(item);
-        }
-
-        return true;
+function uploadGraphics(renderer, item) {
+  if (item instanceof core.Graphics) {
+    // if the item is not dirty and already has webgl data, then it got prepared or rendered
+    // before now and we shouldn't waste time updating it again
+    if (
+      item.dirty ||
+      item.clearDirty ||
+      !item._webGL[renderer.plugins.graphics.CONTEXT_UID]
+    ) {
+      renderer.plugins.graphics.updateGraphics(item);
     }
 
-    return false;
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -86,16 +82,14 @@ function uploadGraphics(renderer, item)
  * @param {Array<*>} queue - Collection of items to upload
  * @return {boolean} if a PIXI.Graphics object was found.
  */
-function findGraphics(item, queue)
-{
-    if (item instanceof core.Graphics)
-    {
-        queue.push(item);
+function findGraphics(item, queue) {
+  if (item instanceof core.Graphics) {
+    queue.push(item);
 
-        return true;
-    }
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);

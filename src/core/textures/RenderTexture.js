@@ -38,93 +38,93 @@ import Texture from './Texture';
  * @extends PIXI.Texture
  * @memberof PIXI
  */
-export default class RenderTexture extends Texture
-{
-    /**
-     * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
-     * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
-     */
-    constructor(baseRenderTexture, frame)
-    {
-        // support for legacy..
-        let _legacyRenderer = null;
+export default class RenderTexture extends Texture {
+  /**
+   * @param {PIXI.BaseRenderTexture} baseRenderTexture - The renderer used for this RenderTexture
+   * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
+   */
+  constructor(baseRenderTexture, frame) {
+    // support for legacy..
+    let _legacyRenderer = null;
 
-        if (!(baseRenderTexture instanceof BaseRenderTexture))
-        {
-            /* eslint-disable prefer-rest-params, no-console */
-            const width = arguments[1];
-            const height = arguments[2];
-            const scaleMode = arguments[3];
-            const resolution = arguments[4];
+    if (!(baseRenderTexture instanceof BaseRenderTexture)) {
+      /* eslint-disable prefer-rest-params, no-console */
+      const width = arguments[1];
+      const height = arguments[2];
+      const scaleMode = arguments[3];
+      const resolution = arguments[4];
 
-            // we have an old render texture..
-            console.warn(`Please use RenderTexture.create(${width}, ${height}) instead of the ctor directly.`);
-            _legacyRenderer = arguments[0];
-            /* eslint-enable prefer-rest-params, no-console */
+      // we have an old render texture..
+      console.warn(
+        `Please use RenderTexture.create(${width}, ${height}) instead of the ctor directly.`
+      );
+      _legacyRenderer = arguments[0];
+      /* eslint-enable prefer-rest-params, no-console */
 
-            frame = null;
-            baseRenderTexture = new BaseRenderTexture(width, height, scaleMode, resolution);
-        }
-
-        /**
-         * The base texture object that this texture uses
-         *
-         * @member {BaseTexture}
-         */
-        super(
-            baseRenderTexture,
-            frame
-        );
-
-        this.legacyRenderer = _legacyRenderer;
-
-        /**
-         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-         *
-         * @member {boolean}
-         */
-        this.valid = true;
-
-        this._updateUvs();
+      frame = null;
+      baseRenderTexture = new BaseRenderTexture(
+        width,
+        height,
+        scaleMode,
+        resolution
+      );
     }
 
     /**
-     * Resizes the RenderTexture.
+     * The base texture object that this texture uses
      *
-     * @param {number} width - The width to resize to.
-     * @param {number} height - The height to resize to.
-     * @param {boolean} doNotResizeBaseTexture - Should the baseTexture.width and height values be resized as well?
+     * @member {BaseTexture}
      */
-    resize(width, height, doNotResizeBaseTexture)
-    {
-        width = Math.ceil(width);
-        height = Math.ceil(height);
+    super(baseRenderTexture, frame);
 
-        // TODO - could be not required..
-        this.valid = (width > 0 && height > 0);
-
-        this._frame.width = this.orig.width = width;
-        this._frame.height = this.orig.height = height;
-
-        if (!doNotResizeBaseTexture)
-        {
-            this.baseTexture.resize(width, height);
-        }
-
-        this._updateUvs();
-    }
+    this.legacyRenderer = _legacyRenderer;
 
     /**
-     * A short hand way of creating a render texture.
+     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
      *
-     * @param {number} [width=100] - The width of the render texture
-     * @param {number} [height=100] - The height of the render texture
-     * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
-     * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
-     * @return {PIXI.RenderTexture} The new render texture
+     * @member {boolean}
      */
-    static create(width, height, scaleMode, resolution)
-    {
-        return new RenderTexture(new BaseRenderTexture(width, height, scaleMode, resolution));
+    this.valid = true;
+
+    this._updateUvs();
+  }
+
+  /**
+   * Resizes the RenderTexture.
+   *
+   * @param {number} width - The width to resize to.
+   * @param {number} height - The height to resize to.
+   * @param {boolean} doNotResizeBaseTexture - Should the baseTexture.width and height values be resized as well?
+   */
+  resize(width, height, doNotResizeBaseTexture) {
+    width = Math.ceil(width);
+    height = Math.ceil(height);
+
+    // TODO - could be not required..
+    this.valid = width > 0 && height > 0;
+
+    this._frame.width = this.orig.width = width;
+    this._frame.height = this.orig.height = height;
+
+    if (!doNotResizeBaseTexture) {
+      this.baseTexture.resize(width, height);
     }
+
+    this._updateUvs();
+  }
+
+  /**
+   * A short hand way of creating a render texture.
+   *
+   * @param {number} [width=100] - The width of the render texture
+   * @param {number} [height=100] - The height of the render texture
+   * @param {number} [scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES} for possible values
+   * @param {number} [resolution=1] - The resolution / device pixel ratio of the texture being generated
+   * @return {PIXI.RenderTexture} The new render texture
+   */
+  static create(width, height, scaleMode, resolution) {
+    return new RenderTexture(
+      new BaseRenderTexture(width, height, scaleMode, resolution)
+    );
+  }
 }

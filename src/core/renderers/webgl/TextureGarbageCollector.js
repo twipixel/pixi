@@ -8,102 +8,91 @@ import settings from '../../settings';
  * @class
  * @memberof PIXI
  */
-export default class TextureGarbageCollector
-{
-    /**
-     * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
-     */
-    constructor(renderer)
-    {
-        this.renderer = renderer;
+export default class TextureGarbageCollector {
+  /**
+   * @param {PIXI.WebGLRenderer} renderer - The renderer this manager works for.
+   */
+  constructor(renderer) {
+    this.renderer = renderer;
 
-        this.count = 0;
-        this.checkCount = 0;
-        this.maxIdle = settings.GC_MAX_IDLE;
-        this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
-        this.mode = settings.GC_MODE;
+    this.count = 0;
+    this.checkCount = 0;
+    this.maxIdle = settings.GC_MAX_IDLE;
+    this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
+    this.mode = settings.GC_MODE;
+  }
+
+  /**
+   * Checks to see when the last time a texture was used
+   * if the texture has not been used for a specified amount of time it will be removed from the GPU
+   */
+  update() {
+    this.count++;
+
+    if (this.mode === GC_MODES.MANUAL) {
+      return;
     }
 
-    /**
-     * Checks to see when the last time a texture was used
-     * if the texture has not been used for a specified amount of time it will be removed from the GPU
-     */
-    update()
-    {
-        this.count++;
+    this.checkCount++;
 
-        if (this.mode === GC_MODES.MANUAL)
-        {
-            return;
-        }
+    if (this.checkCount > this.checkCountMax) {
+      this.checkCount = 0;
 
-        this.checkCount++;
+      this.run();
+    }
+  }
 
-        if (this.checkCount > this.checkCountMax)
-        {
-            this.checkCount = 0;
+  /**
+   * Checks to see when the last time a texture was used
+   * if the texture has not been used for a specified amount of time it will be removed from the GPU
+   */
+  run() {
+    const tm = this.renderer.textureManager;
+    const managedTextures = tm._managedTextures;
+    let wasRemoved = false;
 
-            this.run();
-        }
+    for (let i = 0; i < managedTextures.length; i++) {
+      const texture = managedTextures[i];
+
+      // only supports non generated textures at the moment!
+      if (
+        !texture._glRenderTargets &&
+        this.count - texture.touched > this.maxIdle
+      ) {
+        tm.destroyTexture(texture, true);
+        managedTextures[i] = null;
+        wasRemoved = true;
+      }
     }
 
-    /**
-     * Checks to see when the last time a texture was used
-     * if the texture has not been used for a specified amount of time it will be removed from the GPU
-     */
-    run()
-    {
-        const tm = this.renderer.textureManager;
-        const managedTextures =  tm._managedTextures;
-        let wasRemoved = false;
+    if (wasRemoved) {
+      let j = 0;
 
-        for (let i = 0; i < managedTextures.length; i++)
-        {
-            const texture = managedTextures[i];
-
-            // only supports non generated textures at the moment!
-            if (!texture._glRenderTargets && this.count - texture.touched > this.maxIdle)
-            {
-                tm.destroyTexture(texture, true);
-                managedTextures[i] = null;
-                wasRemoved = true;
-            }
+      for (let i = 0; i < managedTextures.length; i++) {
+        if (managedTextures[i] !== null) {
+          managedTextures[j++] = managedTextures[i];
         }
+      }
 
-        if (wasRemoved)
-        {
-            let j = 0;
+      managedTextures.length = j;
+    }
+  }
 
-            for (let i = 0; i < managedTextures.length; i++)
-            {
-                if (managedTextures[i] !== null)
-                {
-                    managedTextures[j++] = managedTextures[i];
-                }
-            }
+  /**
+   * Removes all the textures within the specified displayObject and its children from the GPU
+   *
+   * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
+   */
+  unload(displayObject) {
+    const tm = this.renderer.textureManager;
 
-            managedTextures.length = j;
-        }
+    // only destroy non generated textures
+    if (displayObject._texture && displayObject._texture._glRenderTargets) {
+      tm.destroyTexture(displayObject._texture, true);
     }
 
-    /**
-     * Removes all the textures within the specified displayObject and its children from the GPU
-     *
-     * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
-     */
-    unload(displayObject)
-    {
-        const tm = this.renderer.textureManager;
-
-        // only destroy non generated textures
-        if (displayObject._texture && displayObject._texture._glRenderTargets)
-        {
-            tm.destroyTexture(displayObject._texture, true);
-        }
-
-        for (let i = displayObject.children.length - 1; i >= 0; i--)
-        {
-            this.unload(displayObject.children[i]);
-        }
+    for (let i = displayObject.children.length - 1; i >= 0; i--) {
+      this.unload(displayObject.children[i]);
     }
+  }
 }

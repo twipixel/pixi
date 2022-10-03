@@ -15,8 +15,14 @@ import Loader from './loader';
  * @namespace PIXI.loaders
  */
 export { Loader };
-export { default as bitmapFontParser, parse as parseBitmapFontData } from './bitmapFontParser';
-export { default as spritesheetParser, getResourcePath } from './spritesheetParser';
+export {
+  default as bitmapFontParser,
+  parse as parseBitmapFontData,
+} from './bitmapFontParser';
+export {
+  default as spritesheetParser,
+  getResourcePath,
+} from './spritesheetParser';
 export { default as textureParser } from './textureParser';
 
 /**
@@ -35,9 +41,8 @@ export { Resource } from 'resource-loader';
  */
 const shared = new Loader();
 
-shared.destroy = () =>
-{
-    // protect destroying shared loader
+shared.destroy = () => {
+  // protect destroying shared loader
 };
 
 export { shared };
@@ -53,28 +58,24 @@ AppPrototype._loader = null;
  * @type {PIXI.loaders.Loader}
  */
 Object.defineProperty(AppPrototype, 'loader', {
-    get()
-    {
-        if (!this._loader)
-        {
-            const sharedLoader = this._options.sharedLoader;
+  get() {
+    if (!this._loader) {
+      const sharedLoader = this._options.sharedLoader;
 
-            this._loader = sharedLoader ? shared : new Loader();
-        }
+      this._loader = sharedLoader ? shared : new Loader();
+    }
 
-        return this._loader;
-    },
+    return this._loader;
+  },
 });
 
 // Override the destroy function
 // making sure to destroy the current Loader
 AppPrototype._parentDestroy = AppPrototype.destroy;
-AppPrototype.destroy = function destroy(removeView)
-{
-    if (this._loader)
-    {
-        this._loader.destroy();
-        this._loader = null;
-    }
-    this._parentDestroy(removeView);
+AppPrototype.destroy = function destroy(removeView) {
+  if (this._loader) {
+    this._loader.destroy();
+    this._loader = null;
+  }
+  this._parentDestroy(removeView);
 };

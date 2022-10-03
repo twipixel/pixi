@@ -56,66 +56,60 @@ import bitmapFontParser from './bitmapFontParser';
  * @extends module:resource-loader.ResourceLoader
  * @memberof PIXI.loaders
  */
-export default class Loader extends ResourceLoader
-{
-    /**
-     * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
-     * @param {number} [concurrency=10] - The number of resources to load concurrently.
-     */
-    constructor(baseUrl, concurrency)
-    {
-        super(baseUrl, concurrency);
-        EventEmitter.call(this);
+export default class Loader extends ResourceLoader {
+  /**
+   * @param {string} [baseUrl=''] - The base url for all resources loaded by this loader.
+   * @param {number} [concurrency=10] - The number of resources to load concurrently.
+   */
+  constructor(baseUrl, concurrency) {
+    super(baseUrl, concurrency);
+    EventEmitter.call(this);
 
-        for (let i = 0; i < Loader._pixiMiddleware.length; ++i)
-        {
-            this.use(Loader._pixiMiddleware[i]());
-        }
-
-        // Compat layer, translate the new v2 signals into old v1 events.
-        this.onStart.add((l) => this.emit('start', l));
-        this.onProgress.add((l, r) => this.emit('progress', l, r));
-        this.onError.add((e, l, r) => this.emit('error', e, l, r));
-        this.onLoad.add((l, r) => this.emit('load', l, r));
-        this.onComplete.add((l, r) => this.emit('complete', l, r));
+    for (let i = 0; i < Loader._pixiMiddleware.length; ++i) {
+      this.use(Loader._pixiMiddleware[i]());
     }
 
-    /**
-     * Adds a default middleware to the PixiJS loader.
-     *
-     * @static
-     * @param {Function} fn - The middleware to add.
-     */
-    static addPixiMiddleware(fn)
-    {
-        Loader._pixiMiddleware.push(fn);
-    }
+    // Compat layer, translate the new v2 signals into old v1 events.
+    this.onStart.add((l) => this.emit('start', l));
+    this.onProgress.add((l, r) => this.emit('progress', l, r));
+    this.onError.add((e, l, r) => this.emit('error', e, l, r));
+    this.onLoad.add((l, r) => this.emit('load', l, r));
+    this.onComplete.add((l, r) => this.emit('complete', l, r));
+  }
 
-    /**
-     * Destroy the loader, removes references.
-     */
-    destroy()
-    {
-        this.removeAllListeners();
-        this.reset();
-    }
+  /**
+   * Adds a default middleware to the PixiJS loader.
+   *
+   * @static
+   * @param {Function} fn - The middleware to add.
+   */
+  static addPixiMiddleware(fn) {
+    Loader._pixiMiddleware.push(fn);
+  }
+
+  /**
+   * Destroy the loader, removes references.
+   */
+  destroy() {
+    this.removeAllListeners();
+    this.reset();
+  }
 }
 
 // Copy EE3 prototype (mixin)
-for (const k in EventEmitter.prototype)
-{
-    Loader.prototype[k] = EventEmitter.prototype[k];
+for (const k in EventEmitter.prototype) {
+  Loader.prototype[k] = EventEmitter.prototype[k];
 }
 
 Loader._pixiMiddleware = [
-    // parse any blob into more usable objects (e.g. Image)
-    blobMiddlewareFactory,
-    // parse any Image objects into textures
-    textureParser,
-    // parse any spritesheet data into multiple textures
-    spritesheetParser,
-    // parse bitmap font data into multiple textures
-    bitmapFontParser,
+  // parse any blob into more usable objects (e.g. Image)
+  blobMiddlewareFactory,
+  // parse any Image objects into textures
+  textureParser,
+  // parse any spritesheet data into multiple textures
+  spritesheetParser,
+  // parse bitmap font data into multiple textures
+  bitmapFontParser,
 ];
 
 // Add custom extentions

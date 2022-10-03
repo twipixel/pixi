@@ -6,7 +6,7 @@ A set of tidy little pixi objects that make working with WebGL simpler.
 
 They are used under the hood in [Pixi v4](http://pixijs.com). They should also give more users the ability to do more advanced stuff with WebGL in v4 too.
 
-See the components in action [here](http://dev.goodboydigital.com/client/goodboy/million/). 
+See the components in action [here](http://dev.goodboydigital.com/client/goodboy/million/).
 
 ## Installing
 
@@ -30,7 +30,7 @@ Including in the Browser:
 <canvas id="stage"></canvas>
 <script src="node_modules/pixi-gl-core/bin/pixi-gl-core.min.js"></script>
 <script>
-    try 
+    try
     {
         var context = pixi.gl.createContext(document.getElementById('stage'));
     }

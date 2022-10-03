@@ -5,14 +5,12 @@
  *
  * @return {string} modified shader source
  */
-var setPrecision = function(src, precision)
-{
-    if(src.substring(0, 9) !== 'precision')
-    {
-        return 'precision ' + precision + ' float;\n' + src;
-    }
+var setPrecision = function (src, precision) {
+  if (src.substring(0, 9) !== 'precision') {
+    return 'precision ' + precision + ' float;\n' + src;
+  }
 
-    return src;
+  return src;
 };
 
 module.exports = setPrecision;

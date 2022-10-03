@@ -29,38 +29,38 @@ let saidHello = false;
  * @namespace PIXI.utils
  */
 export {
-    /**
-     * @see {@link https://github.com/kaimallea/isMobile}
-     *
-     * @memberof PIXI.utils
-     * @function isMobile
-     * @type {Object}
-     */
-    isMobile,
+  /**
+   * @see {@link https://github.com/kaimallea/isMobile}
+   *
+   * @memberof PIXI.utils
+   * @function isMobile
+   * @type {Object}
+   */
+  isMobile,
 
-    /**
-     * @see {@link https://github.com/mreinstein/remove-array-items}
-     *
-     * @memberof PIXI.utils
-     * @function removeItems
-     * @type {Object}
-     */
-    removeItems,
-    /**
-     * @see {@link https://github.com/primus/eventemitter3}
-     *
-     * @memberof PIXI.utils
-     * @class EventEmitter
-     * @type {EventEmitter}
-     */
-    EventEmitter,
-    /**
-     * @memberof PIXI.utils
-     * @function pluginTarget
-     * @type {mixin}
-     */
-    pluginTarget,
-    mixins,
+  /**
+   * @see {@link https://github.com/mreinstein/remove-array-items}
+   *
+   * @memberof PIXI.utils
+   * @function removeItems
+   * @type {Object}
+   */
+  removeItems,
+  /**
+   * @see {@link https://github.com/primus/eventemitter3}
+   *
+   * @memberof PIXI.utils
+   * @class EventEmitter
+   * @type {EventEmitter}
+   */
+  EventEmitter,
+  /**
+   * @memberof PIXI.utils
+   * @function pluginTarget
+   * @type {mixin}
+   */
+  pluginTarget,
+  mixins,
 };
 
 /**
@@ -70,9 +70,8 @@ export {
  * @function uid
  * @return {number} The next unique identifier to use.
  */
-export function uid()
-{
-    return ++nextUid;
+export function uid() {
+  return ++nextUid;
 }
 
 /**
@@ -84,15 +83,14 @@ export function uid()
  * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
  * @return {number[]} An array representing the [R, G, B] of the color.
  */
-export function hex2rgb(hex, out)
-{
-    out = out || [];
+export function hex2rgb(hex, out) {
+  out = out || [];
 
-    out[0] = ((hex >> 16) & 0xFF) / 255;
-    out[1] = ((hex >> 8) & 0xFF) / 255;
-    out[2] = (hex & 0xFF) / 255;
+  out[0] = ((hex >> 16) & 0xff) / 255;
+  out[1] = ((hex >> 8) & 0xff) / 255;
+  out[2] = (hex & 0xff) / 255;
 
-    return out;
+  return out;
 }
 
 /**
@@ -103,12 +101,11 @@ export function hex2rgb(hex, out)
  * @param {number} hex - Number in hex
  * @return {string} The string color.
  */
-export function hex2string(hex)
-{
-    hex = hex.toString(16);
-    hex = '000000'.substr(0, 6 - hex.length) + hex;
+export function hex2string(hex) {
+  hex = hex.toString(16);
+  hex = '000000'.substr(0, 6 - hex.length) + hex;
 
-    return `#${hex}`;
+  return `#${hex}`;
 }
 
 /**
@@ -119,9 +116,8 @@ export function hex2string(hex)
  * @param {number[]} rgb - rgb array
  * @return {number} The color number
  */
-export function rgb2hex(rgb)
-{
-    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
+export function rgb2hex(rgb) {
+  return ((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + ((rgb[2] * 255) | 0);
 }
 
 /**
@@ -134,16 +130,14 @@ export function rgb2hex(rgb)
  * @param {number} [defaultValue=1] - the defaultValue if no filename prefix is set.
  * @return {number} resolution / device pixel ratio of an asset
  */
-export function getResolutionOfUrl(url, defaultValue)
-{
-    const resolution = settings.RETINA_PREFIX.exec(url);
+export function getResolutionOfUrl(url, defaultValue) {
+  const resolution = settings.RETINA_PREFIX.exec(url);
 
-    if (resolution)
-    {
-        return parseFloat(resolution[1]);
-    }
+  if (resolution) {
+    return parseFloat(resolution[1]);
+  }
 
-    return defaultValue !== undefined ? defaultValue : 1;
+  return defaultValue !== undefined ? defaultValue : 1;
 }
 
 /**
@@ -165,21 +159,19 @@ export function getResolutionOfUrl(url, defaultValue)
  * @param {string} dataUri - the data URI to check
  * @return {DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
-export function decomposeDataUri(dataUri)
-{
-    const dataUriMatch = DATA_URI.exec(dataUri);
+export function decomposeDataUri(dataUri) {
+  const dataUriMatch = DATA_URI.exec(dataUri);
 
-    if (dataUriMatch)
-    {
-        return {
-            mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
-            subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
-            encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
-            data: dataUriMatch[4],
-        };
-    }
+  if (dataUriMatch) {
+    return {
+      mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
+      subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
+      encoding: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+      data: dataUriMatch[4],
+    };
+  }
 
-    return undefined;
+  return undefined;
 }
 
 /**
@@ -190,16 +182,14 @@ export function decomposeDataUri(dataUri)
  * @param {string} url - the image path
  * @return {string|undefined} image extension
  */
-export function getUrlFileExtension(url)
-{
-    const extension = URL_FILE_EXTENSION.exec(url);
+export function getUrlFileExtension(url) {
+  const extension = URL_FILE_EXTENSION.exec(url);
 
-    if (extension)
-    {
-        return extension[1].toLowerCase();
-    }
+  if (extension) {
+    return extension[1].toLowerCase();
+  }
 
-    return undefined;
+  return undefined;
 }
 
 /**
@@ -218,18 +208,16 @@ export function getUrlFileExtension(url)
  * @param {string} svgString - a serialized svg element
  * @return {Size|undefined} image extension
  */
-export function getSvgSize(svgString)
-{
-    const sizeMatch = SVG_SIZE.exec(svgString);
-    const size = {};
+export function getSvgSize(svgString) {
+  const sizeMatch = SVG_SIZE.exec(svgString);
+  const size = {};
 
-    if (sizeMatch)
-    {
-        size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
-        size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
-    }
+  if (sizeMatch) {
+    size[sizeMatch[1]] = Math.round(parseFloat(sizeMatch[3]));
+    size[sizeMatch[5]] = Math.round(parseFloat(sizeMatch[7]));
+  }
 
-    return size;
+  return size;
 }
 
 /**
@@ -238,9 +226,8 @@ export function getSvgSize(svgString)
  * @function skipHello
  * @memberof PIXI.utils
  */
-export function skipHello()
-{
-    saidHello = true;
+export function skipHello() {
+  saidHello = true;
 }
 
 /**
@@ -253,36 +240,31 @@ export function skipHello()
  * @memberof PIXI.utils
  * @param {string} type - The string renderer type to log.
  */
-export function sayHello(type)
-{
-    if (saidHello)
-    {
-        return;
-    }
+export function sayHello(type) {
+  if (saidHello) {
+    return;
+  }
 
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
-    {
-        const args = [
-            `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
-            'background: #ff66a5; padding:5px 0;',
-            'background: #ff66a5; padding:5px 0;',
-            'color: #ff66a5; background: #030307; padding:5px 0;',
-            'background: #ff66a5; padding:5px 0;',
-            'background: #ffc3dc; padding:5px 0;',
-            'background: #ff66a5; padding:5px 0;',
-            'color: #ff2424; background: #fff; padding:5px 0;',
-            'color: #ff2424; background: #fff; padding:5px 0;',
-            'color: #ff2424; background: #fff; padding:5px 0;',
-        ];
+  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+    const args = [
+      `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
+      'background: #ff66a5; padding:5px 0;',
+      'background: #ff66a5; padding:5px 0;',
+      'color: #ff66a5; background: #030307; padding:5px 0;',
+      'background: #ff66a5; padding:5px 0;',
+      'background: #ffc3dc; padding:5px 0;',
+      'background: #ff66a5; padding:5px 0;',
+      'color: #ff2424; background: #fff; padding:5px 0;',
+      'color: #ff2424; background: #fff; padding:5px 0;',
+      'color: #ff2424; background: #fff; padding:5px 0;',
+    ];
 
-        window.console.log.apply(console, args);
-    }
-    else if (window.console)
-    {
-        window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
-    }
+    window.console.log.apply(console, args);
+  } else if (window.console) {
+    window.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
+  }
 
-    saidHello = true;
+  saidHello = true;
 }
 
 /**
@@ -292,40 +274,35 @@ export function sayHello(type)
  * @function isWebGLSupported
  * @return {boolean} is webgl supported
  */
-export function isWebGLSupported()
-{
-    const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
+export function isWebGLSupported() {
+  const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
 
-    try
-    {
-        if (!window.WebGLRenderingContext)
-        {
-            return false;
-        }
-
-        const canvas = document.createElement('canvas');
-        let gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
-
-        const success = !!(gl && gl.getContextAttributes().stencil);
-
-        if (gl)
-        {
-            const loseContext = gl.getExtension('WEBGL_lose_context');
-
-            if (loseContext)
-            {
-                loseContext.loseContext();
-            }
-        }
-
-        gl = null;
-
-        return success;
+  try {
+    if (!window.WebGLRenderingContext) {
+      return false;
     }
-    catch (e)
-    {
-        return false;
+
+    const canvas = document.createElement('canvas');
+    let gl =
+      canvas.getContext('webgl', contextOptions) ||
+      canvas.getContext('experimental-webgl', contextOptions);
+
+    const success = !!(gl && gl.getContextAttributes().stencil);
+
+    if (gl) {
+      const loseContext = gl.getExtension('WEBGL_lose_context');
+
+      if (loseContext) {
+        loseContext.loseContext();
+      }
     }
+
+    gl = null;
+
+    return success;
+  } catch (e) {
+    return false;
+  }
 }
 
 /**
@@ -336,11 +313,10 @@ export function isWebGLSupported()
  * @param {number} n - the number to check the sign of
  * @returns {number} 0 if `n` is 0, -1 if `n` is negative, 1 if `n` is positive
  */
-export function sign(n)
-{
-    if (n === 0) return 0;
+export function sign(n) {
+  if (n === 0) return 0;
 
-    return n < 0 ? -1 : 1;
+  return n < 0 ? -1 : 1;
 }
 
 /**
@@ -365,18 +341,15 @@ export const BaseTextureCache = Object.create(null);
  * @memberof PIXI.utils
  * @function destroyTextureCache
  */
-export function destroyTextureCache()
-{
-    let key;
+export function destroyTextureCache() {
+  let key;
 
-    for (key in TextureCache)
-    {
-        TextureCache[key].destroy();
-    }
-    for (key in BaseTextureCache)
-    {
-        BaseTextureCache[key].destroy();
-    }
+  for (key in TextureCache) {
+    TextureCache[key].destroy();
+  }
+  for (key in BaseTextureCache) {
+    BaseTextureCache[key].destroy();
+  }
 }
 
 /**
@@ -385,18 +358,15 @@ export function destroyTextureCache()
  * @memberof PIXI.utils
  * @function clearTextureCache
  */
-export function clearTextureCache()
-{
-    let key;
+export function clearTextureCache() {
+  let key;
 
-    for (key in TextureCache)
-    {
-        delete TextureCache[key];
-    }
-    for (key in BaseTextureCache)
-    {
-        delete BaseTextureCache[key];
-    }
+  for (key in TextureCache) {
+    delete TextureCache[key];
+  }
+  for (key in BaseTextureCache) {
+    delete BaseTextureCache[key];
+  }
 }
 
 /**
@@ -416,9 +386,8 @@ export const premultiplyBlendMode = mapPremultipliedBlendModes();
  * @param {boolean} premultiplied  whether source is premultiplied
  * @returns {number} true blend mode for this texture
  */
-export function correctBlendMode(blendMode, premultiplied)
-{
-    return premultiplyBlendMode[premultiplied ? 1 : 0][blendMode];
+export function correctBlendMode(blendMode, premultiplied) {
+  return premultiplyBlendMode[premultiplied ? 1 : 0][blendMode];
 }
 
 /**
@@ -428,25 +397,22 @@ export function correctBlendMode(blendMode, premultiplied)
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
  */
-export function premultiplyTint(tint, alpha)
-{
-    if (alpha === 1.0)
-    {
-        return (alpha * 255 << 24) + tint;
-    }
-    if (alpha === 0.0)
-    {
-        return 0;
-    }
-    let R = ((tint >> 16) & 0xFF);
-    let G = ((tint >> 8) & 0xFF);
-    let B = (tint & 0xFF);
+export function premultiplyTint(tint, alpha) {
+  if (alpha === 1.0) {
+    return ((alpha * 255) << 24) + tint;
+  }
+  if (alpha === 0.0) {
+    return 0;
+  }
+  let R = (tint >> 16) & 0xff;
+  let G = (tint >> 8) & 0xff;
+  let B = tint & 0xff;
 
-    R = ((R * alpha) + 0.5) | 0;
-    G = ((G * alpha) + 0.5) | 0;
-    B = ((B * alpha) + 0.5) | 0;
+  R = (R * alpha + 0.5) | 0;
+  G = (G * alpha + 0.5) | 0;
+  B = (B * alpha + 0.5) | 0;
 
-    return (alpha * 255 << 24) + (R << 16) + (G << 8) + B;
+  return ((alpha * 255) << 24) + (R << 16) + (G << 8) + B;
 }
 
 /**
@@ -458,24 +424,20 @@ export function premultiplyTint(tint, alpha)
  * @param {boolean} [premultiply=true] do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyRgba(rgb, alpha, out, premultiply)
-{
-    out = out || new Float32Array(4);
-    if (premultiply || premultiply === undefined)
-    {
-        out[0] = rgb[0] * alpha;
-        out[1] = rgb[1] * alpha;
-        out[2] = rgb[2] * alpha;
-    }
-    else
-    {
-        out[0] = rgb[0];
-        out[1] = rgb[1];
-        out[2] = rgb[2];
-    }
-    out[3] = alpha;
+export function premultiplyRgba(rgb, alpha, out, premultiply) {
+  out = out || new Float32Array(4);
+  if (premultiply || premultiply === undefined) {
+    out[0] = rgb[0] * alpha;
+    out[1] = rgb[1] * alpha;
+    out[2] = rgb[2] * alpha;
+  } else {
+    out[0] = rgb[0];
+    out[1] = rgb[1];
+    out[2] = rgb[2];
+  }
+  out[3] = alpha;
 
-    return out;
+  return out;
 }
 
 /**
@@ -487,19 +449,17 @@ export function premultiplyRgba(rgb, alpha, out, premultiply)
  * @param {boolean} [premultiply=true] do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyTintToRgba(tint, alpha, out, premultiply)
-{
-    out = out || new Float32Array(4);
-    out[0] = ((tint >> 16) & 0xFF) / 255.0;
-    out[1] = ((tint >> 8) & 0xFF) / 255.0;
-    out[2] = (tint & 0xFF) / 255.0;
-    if (premultiply || premultiply === undefined)
-    {
-        out[0] *= alpha;
-        out[1] *= alpha;
-        out[2] *= alpha;
-    }
-    out[3] = alpha;
+export function premultiplyTintToRgba(tint, alpha, out, premultiply) {
+  out = out || new Float32Array(4);
+  out[0] = ((tint >> 16) & 0xff) / 255.0;
+  out[1] = ((tint >> 8) & 0xff) / 255.0;
+  out[2] = (tint & 0xff) / 255.0;
+  if (premultiply || premultiply === undefined) {
+    out[0] *= alpha;
+    out[1] *= alpha;
+    out[2] *= alpha;
+  }
+  out[3] = alpha;
 
-    return out;
+  return out;
 }

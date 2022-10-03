@@ -10,17 +10,16 @@ import * as core from '../core';
  *  nice performance boost
  * @return {Point} The updated point
  */
-core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(point = new core.Point(), skipUpdate = false)
-{
-    if (this.parent)
-    {
-        this.parent.toGlobal(this.position, point, skipUpdate);
-    }
-    else
-    {
-        point.x = this.position.x;
-        point.y = this.position.y;
-    }
+core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(
+  point = new core.Point(),
+  skipUpdate = false
+) {
+  if (this.parent) {
+    this.parent.toGlobal(this.position, point, skipUpdate);
+  } else {
+    point.x = this.position.x;
+    point.y = this.position.y;
+  }
 
-    return point;
+  return point;
 };
