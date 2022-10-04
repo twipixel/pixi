@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>KVO</title>
+  </head>
+  <body>
+    <div id="wrap" class="section">
+      <a href="../index.html" class="back">Back to front</a><br /><br />
+      <h2>Key Value Observing</h2>
+    </div>
+    <script type="module">
+      import KVO from '../../practice/kvo/KVO.js';
+
+      const obj1 = new KVO();
+      obj1.x_changed = (value) => console.log('obj1.x_changed', 'value', value);
+      obj1.on('x', (event, value) =>
+        console.log(`obj1.on('x')`, 'event', event, 'value', value)
+      );
+      obj1.set('x', 10);
+
+      const obj2 = new KVO();
+      obj2.set('x', 20);
+      obj2.bindTo('x', obj1);
+      obj2.x_changed = (value) => {
+        console.log('obj2.x_changed call', value);
+      };
+
+      console.log(`obj2.bindTo('x', obj1)`);
+      console.log('obj1.x', obj1.get('x'));
+      console.log('obj2.x', obj2.get('x'));
+
+      obj1.set('x', 30);
+      console.log(`obj1.set('x', 30)`);
+      console.log('obj1.x', obj1.get('x'));
+      console.log('obj2.x', obj2.get('x'));
+      obj2.unbind('x');
+
+      obj1.set('x', 100);
+      console.log('obj1.x', obj1.get('x'));
+      console.log('obj2.x', obj2.get('x'));
+
+      obj1.bindTo('x', obj2);
+      console.log('obj1.x', obj1.get('x'));
+      console.log('obj2.x', obj2.get('x'));
+
+      obj1.unbindAll();
+      obj2.set('x', 1000);
+      console.log('obj1.x', obj1.get('x'));
+      console.log('obj2.x', obj2.get('x'));
+    </script>
+  </body>
+</html>

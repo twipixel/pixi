@@ -15,23 +15,27 @@
       <h2>EventDispatcher</h2>
     </div>
     <script type="module">
-      import EventDispatcher from '../../goal/event/EventDispatcher.js'
+      import EventDispatcher from '../../practice/event/EventDispatcher.js';
 
       const fire = new EventDispatcher();
-      fire.addEventListener('fire', () => console.log('fire'));
-      setTimeout(() => fire.dispatchEvent({ type: 'fire' }), 1000);
+      fire.addEventListener('fire', (event, value) =>
+        console.log('fire', 'event', event, 'value', value)
+      );
+      setTimeout(() => fire.dispatchEvent({ type: 'fire' }, '5000'), 1000);
 
       const click = new EventDispatcher();
-      click.on('click', () => console.log('click'));
-      click.emit({ type: 'click' });
+      click.on('click', (event, value) =>
+        console.log('click', 'event', event, 'value', value)
+      );
+      click.emit({ type: 'click' }, 100);
 
       const flyHandler = () => console.log('fly');
       const fly = new EventDispatcher();
       fly.on('fly', flyHandler);
-      fly.emit({ type: 'fly'});
-      fly.emit({ type: 'fly'});
+      fly.emit({ type: 'fly' });
+      fly.emit({ type: 'fly' });
       fly.off('fly', flyHandler);
-      fly.emit({ type: 'fly'});
+      fly.emit({ type: 'fly' });
 
       const onceHandler = () => console.log('once');
       const once = new EventDispatcher();
@@ -46,7 +50,6 @@
       over.dispatchEvent({ type: 'over' });
       over.removeEventListener('over', overHandler);
       over.dispatchEvent({ type: 'over' });
-
     </script>
   </body>
 </html>
