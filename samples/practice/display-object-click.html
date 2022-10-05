@@ -34,13 +34,14 @@
       import Rectangle from '../../practice/math/shapes/Rectangle.js';
       import Calc from '../../practice/utils/Calc.js';
       import Ticker from '../../practice/ticker/Ticker.js';
+      import PastelColor from '../../practice/utils/PastelColor.js';
 
       const dpr = window.devicePixelRatio;
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
 
-      const screenWidth = 400;
-      const screenHeight = 400;
+      const screenWidth = 800;
+      const screenHeight = 800;
       canvas.width = screenWidth * dpr;
       canvas.height = screenHeight * dpr;
       canvas.style.width = `${screenWidth}px`;
@@ -48,60 +49,66 @@
 
       ctx.scale(dpr, dpr);
 
-      const obj = new DisplayObject();
-      // updateTransfrom 을 하기 위해 기본 부모 설정
-      obj.parent = new DisplayObject();
+      const minSize = 10;
+      const maxSize = 40;
+      const createRandom = () => {
+        const obj = new DisplayObject();
+        // updateTransfrom 을 하기 위해 기본 부모 설정
+        obj.parent = new DisplayObject();
+        const randomSize =
+          minSize + Math.round(Math.random() * (maxSize - minSize));
+        const randomPivot = Math.round(Math.random() * randomSize);
+        obj.shape = new Rectangle(0, 0, randomSize, randomSize);
+        obj.x = Math.round(Math.random() * (screenWidth - randomSize));
+        obj.y = Math.round(Math.random() * (screenHeight - randomSize));
+        obj.color = PastelColor.generate().hexShap;
+        obj.pivot = new Point(randomPivot, randomPivot);
+        obj.degree = Math.round(Math.random() * 360);
+        return obj;
+      };
 
-      const rect = new Rectangle(0, 0, 30, 30);
-
-      // TEST
-      // ctx.fillStyle = `#FF5455`;
-      // ctx.fillRect(10, 10, 10, 10);
-
-      let rotationDegree = 1;
-      // let pivot = 0;
-      // let pivotStep = 1;
-
-      obj.x = 50;
-      obj.y = 50;
-      obj.pivot = new Point(30, 30);
+      let i = 0;
+      const count = 100;
+      const objList = [];
+      while (i < count) {
+        objList.push(createRandom());
+        i = i + 1;
+      }
 
       const render = () => {
-        rotationDegree = rotationDegree + 1;
-        obj.rotation = Calc.toRadians(rotationDegree);
-        // if (pivot + pivotStep > 30 || pivot + pivotStep < 0)
-        //   pivotStep = pivotStep * -1;
-        // pivot = pivot + pivotStep;
-        // obj.pivot = new Point(pivot, pivot);
-
-        obj.updateTransform();
-
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, screenWidth, screenHeight);
+        ctx.globalAlpha = 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const transform = obj.transform.worldTransform;
+        objList.map((obj) => {
+          obj.degree = obj.degree + 1;
+          obj.rotation = Calc.toRadians(obj.degree);
 
-        ctx.setTransform(
-          transform.a * dpr,
-          transform.b * dpr,
-          transform.c * dpr,
-          transform.d * dpr,
-          transform.tx * dpr,
-          transform.ty * dpr
-        );
+          obj.updateTransform();
 
-        // x, y 포인트 그리기
-        ctx.beginPath();
-        const radius = 2;
-        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fillStyle = `#FF5455`;
-        ctx.fill();
+          const { shape, transform, color, degree, clicked } = obj;
+          const worlTransform = transform.worldTransform;
 
-        // rectangle 그리기
-        ctx.fillStyle = `#BD93F8`;
-        ctx.fillRect(0, 0, rect.width, rect.height);
+          ctx.setTransform(
+            worlTransform.a * dpr,
+            worlTransform.b * dpr,
+            worlTransform.c * dpr,
+            worlTransform.d * dpr,
+            worlTransform.tx * dpr,
+            worlTransform.ty * dpr
+          );
+
+          // rectangle 그리기
+          const { x, y, width, height } = shape;
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, width, height);
+
+          if (clicked) {
+            ctx.strokeStyle = '#BD93F8';
+            ctx.strokeRect(x, y, width, height);
+          }
+        });
 
         ctx.restore();
       };
@@ -109,6 +116,22 @@
       const ticker = new Ticker();
       ticker.add(render);
       ticker.start();
+
+      canvas.addEventListener('click', (event) => {
+        const { offsetX, offsetY } = event;
+        console.log('click', offsetX, offsetY);
+        const clickPoint = new Point(offsetX, offsetY);
+        const tempPoint = new Point();
+        objList.map((obj) => {});
+
+        const clickedObj = objList.find((obj) => {
+          const { shape, transform } = obj;
+          const worlTransform = transform.worldTransform;
+          worlTransform.applyInverse(clickPoint, tempPoint);
+          return shape.contains(tempPoint.x, tempPoint.y);
+        });
+        if (clickedObj) clickedObj.clicked = true;
+      });
     </script>
   </body>
 </html>
