@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>DisplayObject Image</title>
+    <style>
+      body {
+        background-color: #fff;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      canvas {
+        border: solid 1px #999;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap" class="section">
+      <a href="../index.html" class="back">Back to front</a><br /><br />
+      <h2>DisplayObject Image</h2>
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <img
+        id="minions_0"
+        src="../../asset/minions/0.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_1"
+        src="../../asset/minions/1.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_2"
+        src="../../asset/minions/2.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_3"
+        src="../../asset/minions/3.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_4"
+        src="../../asset/minions/4.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_5"
+        src="../../asset/minions/5.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_6"
+        src="../../asset/minions/6.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_7"
+        src="../../asset/minions/7.png"
+        style="visibility: hidden"
+      />
+      <img
+        id="minions_8"
+        src="../../asset/minions/8.png"
+        style="visibility: hidden"
+      />
+    </div>
+    <script type="module">
+      import Point from '../../practice/math/Point.js';
+      import DisplayObject from '../../practice/display/DisplayObject.js';
+      import Rectangle from '../../practice/math/shapes/Rectangle.js';
+      import Calc from '../../practice/utils/Calc.js';
+      import Ticker from '../../practice/ticker/Ticker.js';
+      import PastelColor from '../../practice/utils/PastelColor.js';
+
+      const dpr = window.devicePixelRatio;
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const screenWidth = 800;
+      const screenHeight = 800;
+      canvas.width = screenWidth * dpr;
+      canvas.height = screenHeight * dpr;
+      canvas.style.width = `${screenWidth}px`;
+      canvas.style.height = `${screenHeight}px`;
+
+      ctx.scale(dpr, dpr);
+
+      let i = 0;
+      const maxMinions = 9;
+      const minions = [];
+      while (i < maxMinions) {
+        console.log('while', i);
+        const minion = document.getElementById(`minions_${i}`);
+        minions.push({
+          source: minion,
+          size: minion.getBoundingClientRect(),
+        });
+        i = i + 1;
+      }
+
+      console.log('minions.length', minions.length, minions);
+
+      const minSize = 10;
+      const maxSize = 40;
+      const createRandom = () => {
+        const obj = new DisplayObject();
+        // updateTransfrom 을 하기 위해 기본 부모 설정
+        obj.parent = new DisplayObject();
+        const sourceIndex = Math.round(Math.random() * (maxMinions - 1));
+        const { source, size } = minions[sourceIndex] || 0;
+
+        obj.source = source;
+        const sourceWidth = size.width * 0.2;
+        const sourceHeight = size.height * 0.2;
+        const randomSize =
+          sourceWidth > sourceHeight ? sourceHeight : sourceWidth;
+        const randomPivot = Math.round(Math.random() * randomSize);
+        obj.shape = new Rectangle(0, 0, sourceWidth, sourceHeight);
+        obj.x = Math.round(Math.random() * (screenWidth - sourceWidth));
+        obj.y = Math.round(Math.random() * (screenHeight - sourceHeight));
+        obj.pivot = new Point(randomPivot, randomPivot);
+        obj.degree = Math.round(Math.random() * 360);
+        return obj;
+      };
+
+      i = 0;
+      let objList = [];
+      const count = 30;
+      while (i < count) {
+        objList.push(createRandom());
+        i = i + 1;
+      }
+
+      const render = () => {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.globalAlpha = 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        objList.map((obj) => {
+          obj.degree = obj.degree + 1;
+          obj.rotation = Calc.toRadians(obj.degree);
+
+          obj.updateTransform();
+
+          const { source, shape, transform, color, degree, clicked } = obj;
+          const worlTransform = transform.worldTransform;
+
+          ctx.setTransform(
+            worlTransform.a * dpr,
+            worlTransform.b * dpr,
+            worlTransform.c * dpr,
+            worlTransform.d * dpr,
+            worlTransform.tx * dpr,
+            worlTransform.ty * dpr
+          );
+
+          // rectangle 그리기
+          const { x, y, width, height } = shape;
+          ctx.drawImage(source, 0, 0, width, height);
+
+          if (clicked) {
+            ctx.strokeStyle = '#BD93F8';
+            ctx.strokeRect(x, y, width, height);
+          }
+        });
+
+        ctx.restore();
+      };
+
+      const ticker = new Ticker();
+      ticker.add(render);
+      ticker.start();
+
+      canvas.addEventListener('click', (event) => {
+        const { offsetX, offsetY } = event;
+        console.log('click', offsetX, offsetY);
+        const clickPoint = new Point(offsetX, offsetY);
+        const tempPoint = new Point();
+        objList.map((obj) => {});
+
+        const clickedObjIndex = objList.findIndex((obj) => {
+          const { shape, transform } = obj;
+          const worlTransform = transform.worldTransform;
+          worlTransform.applyInverse(clickPoint, tempPoint);
+          return shape.contains(tempPoint.x, tempPoint.y);
+        });
+
+        if (clickedObjIndex) {
+          const [clickObj] = objList.splice(clickedObjIndex, 1);
+          clickObj.clicked = 1;
+          const clone = [...objList, clickObj];
+          objList = clone;
+        }
+      });
+    </script>
+  </body>
+</html>
