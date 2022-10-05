@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>DisplayObject</title>
+    <title>DisplayObject Multi</title>
     <style>
       body {
         background-color: #fff;
@@ -25,8 +25,8 @@
   <body>
     <div id="wrap" class="section">
       <a href="../index.html" class="back">Back to front</a><br /><br />
-      <h2>DisplayObject</h2>
-      <canvas id="canvas" width="800" height="800"></canvas>
+      <h2>DisplayObject Multi</h2>
+      <canvas id="canvas" width="400" height="400"></canvas>
     </div>
     <script type="module">
       import Point from '../../practice/math/Point.js';
@@ -39,8 +39,8 @@
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
 
-      const screenWidth = 800;
-      const screenHeight = 800;
+      const screenWidth = 400;
+      const screenHeight = 400;
       canvas.width = screenWidth * dpr;
       canvas.height = screenHeight * dpr;
       canvas.style.width = `${screenWidth}px`;
