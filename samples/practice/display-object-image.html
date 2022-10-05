@@ -72,6 +72,11 @@
         src="../../asset/minions/8.png"
         style="visibility: hidden"
       />
+      <img
+        id="minions_9"
+        src="../../asset/minions/9.png"
+        style="visibility: hidden"
+      />
     </div>
     <script type="module">
       import Point from '../../practice/math/Point.js';
@@ -95,7 +100,7 @@
       ctx.scale(dpr, dpr);
 
       let i = 0;
-      const maxMinions = 9;
+      const maxMinions = 10;
       const minions = [];
       while (i < maxMinions) {
         console.log('while', i);
@@ -107,8 +112,6 @@
         i = i + 1;
       }
 
-      console.log('minions.length', minions.length, minions);
-
       const minSize = 10;
       const maxSize = 40;
       const createRandom = () => {
@@ -119,8 +122,14 @@
         const { source, size } = minions[sourceIndex] || 0;
 
         obj.source = source;
-        const sourceWidth = size.width * 0.2;
-        const sourceHeight = size.height * 0.2;
+        const maxMinionsSize = 140;
+        const { width, height } = size;
+        const isPortrait = height > width;
+        const scale = isPortrait
+          ? maxMinionsSize / size.height
+          : maxMinionsSize / size.width;
+        const sourceWidth = size.width * scale;
+        const sourceHeight = size.height * scale;
         const randomSize =
           sourceWidth > sourceHeight ? sourceHeight : sourceWidth;
         const randomPivot = Math.round(Math.random() * randomSize);
