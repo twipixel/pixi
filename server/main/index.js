@@ -3,6 +3,7 @@ var express = express || require('express'),
   env = process.env.NODE_ENV || 'development';
 
 router.use('/dist', express.static('dist'));
+router.use('/libs', express.static('libs'));
 router.use('/asset', express.static('asset'));
 router.use('/practice', express.static('practice'));
 router.use('/samples', express.static('samples'));
