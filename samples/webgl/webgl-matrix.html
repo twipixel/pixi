@@ -29,7 +29,8 @@
       <canvas id="canvas" width="600" height="600"></canvas>
     </div>
     <script type="module">
-      // https://webgl2fundamentals.org/webgl/lessons/ko/webgl-fundamentals.html#toc
+      // https://webgl2fundamentals.org/webgl/lessons/ko/webgl-2d-matrices.html
+
       import {
         createProgramFromSources,
         resizeCanvasToDisplaySize,
@@ -39,47 +40,33 @@
 
       const vertexShaderSource = `#version 300 es
 
-        // an attribute is an input (in) to a vertex shader.
-        // It will receive data from a buffer
-        in vec2 a_position;
+                  // an attribute is an input (in) to a vertex shader.
+                  // It will receive data from a buffer
+                  in vec2 a_position;
 
-        // Used to pass in the resolution of the canvas
-        uniform vec2 u_resolution;
+                  // A matrix to transform the positions by
+                  uniform mat3 u_matrix;
 
-        // A matrix to transform the positions by
-        uniform mat3 u_matrix;
-
-        // all shaders have a main function
-        void main() {
-          // Multiply the position by the matrix.
-          vec2 position = (u_matrix * vec3(a_position, 1)).xy;
-
-          // convert the position from pixels to 0.0 to 1.0
-          vec2 zeroToOne = position / u_resolution;
-
-          // convert from 0->1 to 0->2
-          vec2 zeroToTwo = zeroToOne * 2.0;
-
-          // convert from 0->2 to -1->+1 (clipspace)
-          vec2 clipSpace = zeroToTwo - 1.0;
-
-          gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-        }
-      `;
+                  // all shaders have a main function
+                  void main() {
+                    // Multiply the position by the matrix.
+                    gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
+                  }
+                `;
 
       const fragmentShaderSource = `#version 300 es
 
-        precision highp float;
+                  precision highp float;
 
-        uniform vec4 u_color;
+                  uniform vec4 u_color;
 
-        // we need to declare an output for the fragment shader
-        out vec4 outColor;
+                  // we need to declare an output for the fragment shader
+                  out vec4 outColor;
 
-        void main() {
-          outColor = u_color;
-        }
-      `;
+                  void main() {
+                    outColor = u_color;
+                  }
+                `;
 
       function main() {
         var canvas = document.querySelector('#canvas');
@@ -214,16 +201,13 @@
           gl.uniform4fv(colorLocation, color);
 
           // Compute the matrices
-          var translationMatrix = m3.translation(
-            translation[0],
-            translation[1]
+          var matrix = m3.projection(
+            gl.canvas.clientWidth,
+            gl.canvas.clientHeight
           );
-          var rotationMatrix = m3.rotation(rotationInRadians);
-          var scaleMatrix = m3.scaling(scale[0], scale[1]);
-
-          // Multiply the matrices.
-          var matrix = m3.multiply(translationMatrix, rotationMatrix);
-          matrix = m3.multiply(matrix, scaleMatrix);
+          matrix = m3.translate(matrix, translation[0], translation[1]);
+          matrix = m3.rotate(matrix, rotationInRadians);
+          matrix = m3.scale(matrix, scale[0], scale[1]);
 
           // Set the matrix.
           gl.uniformMatrix3fv(matrixLocation, false, matrix);
@@ -256,6 +240,11 @@
       }
 
       var m3 = {
+        projection: function projection(width, height) {
+          // Note: This matrix flips the Y axis so that 0 is at the top.
+          return [2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1];
+        },
+
         translation: function translation(tx, ty) {
           return [1, 0, 0, 0, 1, 0, tx, ty, 1];
         },
@@ -300,6 +289,18 @@
             b20 * a01 + b21 * a11 + b22 * a21,
             b20 * a02 + b21 * a12 + b22 * a22,
           ];
+        },
+
+        translate: function (m, tx, ty) {
+          return m3.multiply(m, m3.translation(tx, ty));
+        },
+
+        rotate: function (m, angleInRadians) {
+          return m3.multiply(m, m3.rotation(angleInRadians));
+        },
+
+        scale: function (m, sx, sy) {
+          return m3.multiply(m, m3.scaling(sx, sy));
         },
       };
 
