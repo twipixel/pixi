@@ -412,3 +412,39 @@ https://webgl2fundamentals.org/webgl/lessons/ko/webgl-image-processing-continued
 텍스처 2      -> [Normal]      -> 캔버스
 ```
 
+
+
+## 텍스처 유닛
+
+https://webgl2fundamentals.org/webgl/lessons/ko/webgl-2-textures.html
+
+텍스처 유닛에 대해 쉽게 생각해 보자면 다음과 같습니다: 모든 텍스처 관련 함수는 "활성화된(active) 텍스처 유닛"에 적용됩니다. "활성화된 텍스처 유닛"이란 단순히 여러분이 작업하고자 하는 텍스처 유닛의 인덱스인 전역 변수입니다. WebGL의 텍스처 유닛은 네 개의 타겟이 있습니다. TEXTURE_2D, TEXTURE_3D, TEXTURE_2D_ARRAY, TEXTURE_CUBE_MAP 입니다. 각 텍스처 함수는 현재 활성화된 텍스처 유닛의 명시된 타겟에 대해 동작합니다. 만일 WebGL을 자바스크립트를 활용해 구현한다면 아래와 같을겁니다.
+
+```
+var getContext = function() {  var textureUnits = [    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },    { TEXTURE_2D: null, TEXTURE_3D: null, TEXTURE_2D_ARRAY: null, TEXTURE_CUBE_MAP: null, },  ];  var activeTextureUnit = 0;   var activeTexture = function(unit) {    // 유닛 열거자를 인덱스로 변환합니다.    var index = unit - gl.TEXTURE0;    // 활성화된 텍스처 유닛을 설정합니다.    activeTextureUnit = index;  };   var bindTexture = function(target, texture) {    // 활성화된 텍스처 유닛의 타겟에 텍스처를 설정합니다.    textureUnits[activeTextureUnit][target] = texture;  };   var texImage2D = function(target, ...args) {    // 현재 텍스처 유닛의 활성화된 텍스처에 texImage2D를 호출합니다.    var texture = textureUnits[activeTextureUnit][target];    texture.image2D(...args);  };   var texImage3D = function(target, ...args) {    // 현재 텍스처 유닛의 활성화된 텍스처에 texImage3D를 호출합니다.    var texture = textureUnits[activeTextureUnit][target];    texture.image3D(...args);  };   // WebGL API를 반환합니다.  return {    activeTexture: activeTexture,    bindTexture: bindTexture,    texImage2D: texImage2D,    texImage3D: texImage3D,  };};
+```
+
+셰이더는 텍스처 유닛의 인덱스를 받습니다. 아래 두 줄의 코드의 의미가 명확해지셨길 바랍니다.
+
+```
+  gl.uniform1i(u_image0Location, 0);  // 텍스처 유닛 0  gl.uniform1i(u_image1Location, 1);  // 텍스처 유닛 1
+```
+
+하나 주의하셔야 할 것은, 유니폼을 설정할 때에는 텍스처 유닛의 인덱스를 사용하지만 gl.activeTexture를 호출할 때에는 gl.TEXTURE0, gl.TEXTURE1과 같은 특수한 상수를 사용해야 한다는 것입니다. 다행히 상수들은 연속된 숫자이므로 아래와 같이 하는 대신,
+
+```
+  gl.activeTexture(gl.TEXTURE0);  gl.bindTexture(gl.TEXTURE_2D, textures[0]);  gl.activeTexture(gl.TEXTURE1);  gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+```
+
+이렇게 할 수 있습니다.
+
+```
+  gl.activeTexture(gl.TEXTURE0 + 0);  gl.bindTexture(gl.TEXTURE_2D, textures[0]);  gl.activeTexture(gl.TEXTURE0 + 1);  gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+```
+
+아니면 이렇게도 가능합니다.
+
+```
+  for (var ii = 0; ii < 2; ++ii) {    gl.activeTexture(gl.TEXTURE0 + ii);    gl.bindTexture(gl.TEXTURE_2D, textures[ii]);  }
+```
+
