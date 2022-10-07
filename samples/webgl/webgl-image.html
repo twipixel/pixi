@@ -17,7 +17,35 @@
         -ms-user-select: none;
         user-select: none;
       }
-
+      input[type='checkbox'] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: greenyellow;
+        border-radius: 4px;
+        cursor: pointer;
+        height: 16px;
+        outline: 0;
+        width: 16px;
+      }
+      input[type='checkbox']::after {
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        content: '';
+        display: none;
+        height: 40%;
+        left: 40%;
+        position: relative;
+        top: 20%;
+        transform: rotate(45deg);
+        width: 15%;
+      }
+      input[type='checkbox']:checked {
+        background: #03c73c;
+      }
+      input[type='checkbox']:checked::after {
+        display: block;
+      }
       canvas {
         border: solid 1px #999;
       }
@@ -26,8 +54,36 @@
   <body>
     <div id="wrap" class="section">
       <h2>WebGL Image</h2>
-      <canvas id="canvas" width="600" height="600"></canvas>
+      <div>
+        <input
+          id="bgra"
+          style="position: absolute"
+          type="checkbox"
+          name="bgra"
+          value="bgra"
+          checked
+        />
+        <canvas id="canvas1" width="240" height="180"></canvas>
+      </div>
+      <div>
+        <div id="uiContainer" style="position: absolute">
+          <div id="ui"></div>
+        </div>
+        <canvas id="canvas2" width="240" height="180"></canvas>
+      </div>
+      <div style="display: inline-block">
+        <canvas
+          style="position: relative"
+          id="canvas3"
+          width="240"
+          height="180"
+        ></canvas>
+        <div id="uiContainer1" style="float: right">
+          <div id="ui1"></div>
+        </div>
+      </div>
     </div>
+    <!-- canvas 1 -->
     <script type="module">
       // https://webgl2fundamentals.org/webgl/lessons/ko/webgl-2d-matrices.html
 
@@ -36,9 +92,266 @@
         resizeCanvasToDisplaySize,
       } from '../../libs/webgl-utils.js';
 
-      const gui = new dat.GUI();
+      var vertexShaderSource = `#version 300 es
 
-      const vertexShaderSource = `#version 300 es
+      // an attribute is an input (in) to a vertex shader.
+      // It will receive data from a buffer
+      in vec2 a_position;
+      in vec2 a_texCoord;
+
+      // Used to pass in the resolution of the canvas
+      uniform vec2 u_resolution;
+
+      // Used to pass the texture coordinates to the fragment shader
+      out vec2 v_texCoord;
+
+      // all shaders have a main function
+      void main() {
+
+        // convert the position from pixels to 0.0 to 1.0
+        vec2 zeroToOne = a_position / u_resolution;
+
+        // convert from 0->1 to 0->2
+        vec2 zeroToTwo = zeroToOne * 2.0;
+
+        // convert from 0->2 to -1->+1 (clipspace)r
+        vec2 clipSpace = zeroToTwo - 1.0;
+
+        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+
+        // 프래그먼트 셰이더로 texCoord 전달
+        // GPU가 이 값들을 점 사이에서 보간 할 것입니다.
+        v_texCoord = a_texCoord;
+      }
+      `;
+      var fragmentShaderSource = `#version 300 es
+
+      // fragment shaders don't have a default precision so we need
+      // to pick one. highp is a good default. It means "high precision"
+      precision highp float;
+
+      // 사용할 텍스처
+      uniform sampler2D u_image;
+
+      // bgra 변환 설정
+      uniform bool u_bgra;
+
+      // texCoord는 정점 셰이더에서 전달된 것입니다.
+      in vec2 v_texCoord;
+
+      // 프래그먼트 셰이더는 출력값을 선언해야합니다.
+      out vec4 outColor;
+
+      void main() {
+        // 텍스처에서 색상을 찾습니다.
+
+        if (u_bgra) {
+          outColor = texture(u_image, v_texCoord).bgra;
+        } else {
+          outColor = texture(u_image, v_texCoord);
+        }
+      }
+      `;
+
+      var image = new Image();
+      image.src = '../../asset/webgl/leaves.jpeg';
+      image.onload = function () {
+        render(image);
+      };
+
+      function render(image) {
+        // Get A WebGL context
+        /** @type {HTMLCanvasElement} */
+        var canvas = document.querySelector('#canvas1');
+        var gl = canvas.getContext('webgl2');
+        if (!gl) {
+          return;
+        }
+
+        // setup GLSL program
+        var program = createProgramFromSources(gl, [
+          vertexShaderSource,
+          fragmentShaderSource,
+        ]);
+
+        // 정점 데이터가 가야할 location을 찾습니다.
+        var positionAttributeLocation = gl.getAttribLocation(
+          program,
+          'a_position'
+        );
+        var texCoordAttributeLocation = gl.getAttribLocation(
+          program,
+          'a_texCoord'
+        );
+
+        // uniform 찾기
+        var resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+        var imageLocation = gl.getUniformLocation(program, 'u_image');
+        var bgraLocation = gl.getUniformLocation(program, 'u_bgra');
+
+        // Create a vertex array object (attribute state)
+        var vao = gl.createVertexArray();
+
+        // and make it the one we're currently working with
+        gl.bindVertexArray(vao);
+
+        // Create a buffer and put a single pixel space rectangle in
+        // it (2 triangles)
+        var positionBuffer = gl.createBuffer();
+
+        // Turn on the attribute
+        gl.enableVertexAttribArray(positionAttributeLocation);
+
+        // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+        // colorBuffer(ARRAY_BUFFER)의 데이터를 가져오는 방법을 색상 속성에 지시
+        var size = 2; // 반복마다 2개의 컴포넌트
+        var type = gl.FLOAT; // 데이터는 32비트 부동 소수점
+        var normalize = false; // 데이터 정규화 안 함
+        var stride = 0; // 0 = 다음 위치를 가져오기 위해 반복마다 size * sizeof(type) 만큼 앞으로 이동
+        var offset = 0; // 버퍼의 처음부터 시작
+        gl.vertexAttribPointer(
+          positionAttributeLocation,
+          size,
+          type,
+          normalize,
+          stride,
+          offset
+        );
+
+        // 직사각형의 텍스처 좌표를 제공합니다.
+        var texCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([
+            0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
+          ]),
+          gl.STATIC_DRAW
+        );
+
+        // Turn on the attribute
+        gl.enableVertexAttribArray(texCoordAttributeLocation);
+
+        // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
+        var size = 2; // 2 components per iteration
+        var type = gl.FLOAT; // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0; // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+          texCoordAttributeLocation,
+          size,
+          type,
+          normalize,
+          stride,
+          offset
+        );
+
+        // Create a texture.
+        var texture = gl.createTexture();
+
+        // 텍스처 유닛 0을 활성화합니다.
+        // (이후 호출하는 텍스처 명령들이 영향을 주게 될 텍스처 유닛)
+        gl.activeTexture(gl.TEXTURE0 + 0);
+
+        // 텍스처 유닛 0에 텍스처를 바인딩합니다.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        // 매개 변수를 설정하여 우리는 밉맵이 필요 없으며
+        // 필터링 하지 않을 것이고 텍스처 반복(repeat)도 필요 없다고 알립니다.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        // 텍스처로 이미지를 업로드
+        var mipLevel = 0; // 가장큰 밉맵
+        var internalFormat = gl.RGBA; // 텍스처로 사용하길 원하는 포맷
+        var srcFormat = gl.RGBA; // 우리가 제공하는 데이터의 포맷
+        var srcType = gl.UNSIGNED_BYTE; // 우리가 제공하는 데이터의 타입
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          mipLevel,
+          internalFormat,
+          srcFormat,
+          srcType,
+          image
+        );
+
+        resizeCanvasToDisplaySize(gl.canvas);
+
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        // Clear the canvas
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // Tell it to use our program (pair of shaders)
+        gl.useProgram(program);
+
+        // Bind the attribute/buffer set we want.
+        gl.bindVertexArray(vao);
+
+        // 셰이더에서 픽셀에서 클립공간으로 변환 할수 있도록
+        // 캔버스 해상도를 전달합니다.
+        gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
+        // 셰이더에 텍스처 유닛 0에서 텍스처를 가져오라고 알려줍니다.
+        gl.uniform1i(imageLocation, 0);
+
+        var isChangeBgra = true;
+
+        // position 버퍼를 바인딩하여 setRectangle에서 호출 될
+        // gl.bufferData가 position 버퍼에 데이터를 넣습니다.
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+        // 사각형의 크기를 이미지와 같은 크기로 설정합니다.
+        setRectangle(gl, 0, 0, image.width, image.height);
+
+        function draw() {
+          // rgba 노출 여부 설정
+          gl.uniform1i(bgraLocation, isChangeBgra);
+
+          // Draw the rectangle.
+          var primitiveType = gl.TRIANGLES;
+          var offset = 0;
+          var count = 6;
+          gl.drawArrays(primitiveType, offset, count);
+        }
+
+        draw();
+
+        var checkbox = document.getElementById('bgra');
+        checkbox.addEventListener('click', () => {
+          isChangeBgra = !isChangeBgra;
+          draw();
+        });
+      }
+
+      function setRectangle(gl, x, y, width, height) {
+        var x1 = x;
+        var x2 = x + width;
+        var y1 = y;
+        var y2 = y + height;
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
+          gl.STATIC_DRAW
+        );
+      }
+    </script>
+
+    <!-- canvas 2 -->
+    <script type="module">
+      import {
+        createProgramFromSources,
+        resizeCanvasToDisplaySize,
+      } from '../../libs/webgl-utils.js';
+
+      var vertexShaderSource = `#version 300 es
 
       // an attribute is an input (in) to a vertex shader.
       // It will receive data from a buffer
@@ -70,28 +383,45 @@
         v_texCoord = a_texCoord;
       }
       `;
-      const fragmentShaderSource = `#version 300 es
 
-      // fragment shaders don't have a default precision so we need
-      // to pick one. highp is a good default. It means "high precision"
+      var fragmentShaderSource = `#version 300 es
+
+      // 프래그먼트 셰이더는 정밀도 기본값이 없으므로 우리가 선택해야 합니다.
+      // highp가 대개 괜찮습니다. "높은 정밀도"를 의미합니다.
       precision highp float;
 
       // our texture
       uniform sampler2D u_image;
 
-      // the texCoords passed in from the vertex shader.
+      // 컨볼루션 커널 데이터
+      uniform float u_kernel[9];
+      uniform float u_kernelWeight;
+
+      // texCoord는 정점 셰이더에서 전달됩니다.
       in vec2 v_texCoord;
 
-      // we need to declare an output for the fragment shader
+      // 프래그먼트 셰이더는 출력을 선언 해야합니다.
       out vec4 outColor;
 
       void main() {
-        outColor = texture(u_image, v_texCoord);
+        vec2 onePixel = vec2(1) / vec2(textureSize(u_image, 0));
+
+        vec4 colorSum =
+            texture(u_image, v_texCoord + onePixel * vec2(-1, -1)) * u_kernel[0] +
+            texture(u_image, v_texCoord + onePixel * vec2( 0, -1)) * u_kernel[1] +
+            texture(u_image, v_texCoord + onePixel * vec2( 1, -1)) * u_kernel[2] +
+            texture(u_image, v_texCoord + onePixel * vec2(-1,  0)) * u_kernel[3] +
+            texture(u_image, v_texCoord + onePixel * vec2( 0,  0)) * u_kernel[4] +
+            texture(u_image, v_texCoord + onePixel * vec2( 1,  0)) * u_kernel[5] +
+            texture(u_image, v_texCoord + onePixel * vec2(-1,  1)) * u_kernel[6] +
+            texture(u_image, v_texCoord + onePixel * vec2( 0,  1)) * u_kernel[7] +
+            texture(u_image, v_texCoord + onePixel * vec2( 1,  1)) * u_kernel[8] ;
+        outColor = vec4((colorSum / u_kernelWeight).rgb, 1);
       }
       `;
 
       var image = new Image();
-      image.src = '../../asset/webgl/leaves.jpeg';
+      image.src = '../../asset/webgl/leaves.jpeg'; // MUST BE SAME DOMAIN!!!
       image.onload = function () {
         render(image);
       };
@@ -99,7 +429,7 @@
       function render(image) {
         // Get A WebGL context
         /** @type {HTMLCanvasElement} */
-        var canvas = document.querySelector('#canvas');
+        var canvas = document.querySelector('#canvas2');
         var gl = canvas.getContext('webgl2');
         if (!gl) {
           return;
@@ -124,6 +454,11 @@
         // lookup uniforms
         var resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
         var imageLocation = gl.getUniformLocation(program, 'u_image');
+        var kernelLocation = gl.getUniformLocation(program, 'u_kernel');
+        var kernelWeightLocation = gl.getUniformLocation(
+          program,
+          'u_kernelWeight'
+        );
 
         // Create a vertex array object (attribute state)
         var vao = gl.createVertexArray();
@@ -192,11 +527,11 @@
         // (ie, the unit all other texture commands will affect
         gl.activeTexture(gl.TEXTURE0 + 0);
 
-        // Bind it to texture unit 0' 2D bind point
+        // Bind it to texture unit 0's 2D bind point
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
         // Set the parameters so we don't need mips and so we're not filtering
-        // and we don't repeat at the edges
+        // and we don't repeat at the edges.
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -216,28 +551,6 @@
           image
         );
 
-        resizeCanvasToDisplaySize(gl.canvas);
-
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-        // Clear the canvas
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        // Tell it to use our program (pair of shaders)
-        gl.useProgram(program);
-
-        // Bind the attribute/buffer set we want.
-        gl.bindVertexArray(vao);
-
-        // Pass in the canvas resolution so we can convert from
-        // pixels to clipspace in the shader
-        gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
-
-        // Tell the shader to get the texture from texture unit 0
-        gl.uniform1i(imageLocation, 0);
-
         // Bind the position buffer so gl.bufferData that will be called
         // in setRectangle puts data in the position buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -245,11 +558,106 @@
         // Set a rectangle the same size as the image.
         setRectangle(gl, 0, 0, image.width, image.height);
 
-        // Draw the rectangle.
-        var primitiveType = gl.TRIANGLES;
-        var offset = 0;
-        var count = 6;
-        gl.drawArrays(primitiveType, offset, count);
+        // Define several convolution kernels
+        var kernels = {
+          normal: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+          gaussianBlur: [
+            0.045, 0.122, 0.045, 0.122, 0.332, 0.122, 0.045, 0.122, 0.045,
+          ],
+          gaussianBlur2: [1, 2, 1, 2, 4, 2, 1, 2, 1],
+          gaussianBlur3: [0, 1, 0, 1, 1, 1, 0, 1, 0],
+          unsharpen: [-1, -1, -1, -1, 9, -1, -1, -1, -1],
+          sharpness: [0, -1, 0, -1, 5, -1, 0, -1, 0],
+          sharpen: [-1, -1, -1, -1, 16, -1, -1, -1, -1],
+          edgeDetect: [
+            -0.125, -0.125, -0.125, -0.125, 1, -0.125, -0.125, -0.125, -0.125,
+          ],
+          edgeDetect2: [-1, -1, -1, -1, 8, -1, -1, -1, -1],
+          edgeDetect3: [-5, 0, 0, 0, 0, 0, 0, 0, 5],
+          edgeDetect4: [-1, -1, -1, 0, 0, 0, 1, 1, 1],
+          edgeDetect5: [-1, -1, -1, 2, 2, 2, -1, -1, -1],
+          edgeDetect6: [-5, -5, -5, -5, 39, -5, -5, -5, -5],
+          sobelHorizontal: [1, 2, 1, 0, 0, 0, -1, -2, -1],
+          sobelVertical: [1, 0, -1, 2, 0, -2, 1, 0, -1],
+          previtHorizontal: [1, 1, 1, 0, 0, 0, -1, -1, -1],
+          previtVertical: [1, 0, -1, 1, 0, -1, 1, 0, -1],
+          boxBlur: [
+            0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111,
+          ],
+          triangleBlur: [
+            0.0625, 0.125, 0.0625, 0.125, 0.25, 0.125, 0.0625, 0.125, 0.0625,
+          ],
+          emboss: [-2, -1, 0, -1, 1, 1, 0, 1, 2],
+        };
+        var initialSelection = 'edgeDetect2';
+
+        // Setup UI to pick kernels.
+        var ui = document.querySelector('#ui');
+        var select = document.createElement('select');
+        for (var name in kernels) {
+          var option = document.createElement('option');
+          option.value = name;
+          if (name === initialSelection) {
+            option.selected = true;
+          }
+          option.appendChild(document.createTextNode(name));
+          select.appendChild(option);
+        }
+        select.onchange = function () {
+          drawWithKernel(this.options[this.selectedIndex].value);
+        };
+        ui.appendChild(select);
+
+        drawWithKernel(initialSelection);
+
+        function computeKernelWeight(kernel) {
+          var weight = kernel.reduce(function (prev, curr) {
+            return prev + curr;
+          });
+          return weight <= 0 ? 1 : weight;
+        }
+
+        function drawWithKernel(name) {
+          resizeCanvasToDisplaySize(gl.canvas);
+
+          // Tell WebGL how to convert from clip space to pixels
+          gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+          // Clear the canvas
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+          // Tell it to use our program (pair of shaders)
+          gl.useProgram(program);
+
+          // Bind the attribute/buffer set we want.
+          gl.bindVertexArray(vao);
+
+          // Pass in the canvas resolution so we can convert from
+          // pixels to clipspace in the shader
+          gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
+          // Tell the shader to get the texture from texture unit 0
+          gl.uniform1i(imageLocation, 0);
+
+          // set the kernel and it's weight
+          console.log(
+            `${name}]: ${kernels[name]}, weight: ${computeKernelWeight(
+              kernels[name]
+            )}`
+          );
+          gl.uniform1fv(kernelLocation, kernels[name]);
+          gl.uniform1f(
+            kernelWeightLocation,
+            computeKernelWeight(kernels[name])
+          );
+
+          // Draw the rectangle.
+          var primitiveType = gl.TRIANGLES;
+          var offset = 0;
+          var count = 6;
+          gl.drawArrays(primitiveType, offset, count);
+        }
       }
 
       function setRectangle(gl, x, y, width, height) {
@@ -263,6 +671,456 @@
           gl.STATIC_DRAW
         );
       }
+    </script>
+    <!-- canvas 3 -->
+    <script type="module">
+      // https://webgl2fundamentals.org/webgl/lessons/ko/webgl-image-processing-continued.html
+
+      import {
+        createProgramFromSources,
+        resizeCanvasToDisplaySize,
+      } from '../../libs/webgl-utils.js';
+
+      var vertexShaderSource = `#version 300 es
+
+// an attribute is an input (in) to a vertex shader.
+// It will receive data from a buffer
+in vec2 a_position;
+in vec2 a_texCoord;
+
+// Used to pass in the resolution of the canvas
+uniform vec2 u_resolution;
+uniform float u_flipY;
+
+// Used to pass the texture coordinates to the fragment shader
+out vec2 v_texCoord;
+
+// all shaders have a main function
+void main() {
+
+  // convert the position from pixels to 0.0 to 1.0
+  vec2 zeroToOne = a_position / u_resolution;
+
+  // convert from 0->1 to 0->2
+  vec2 zeroToTwo = zeroToOne * 2.0;
+
+  // convert from 0->2 to -1->+1 (clipspace)
+  vec2 clipSpace = zeroToTwo - 1.0;
+
+  gl_Position = vec4(clipSpace * vec2(1, u_flipY), 0, 1);
+
+  // pass the texCoord to the fragment shader
+  // The GPU will interpolate this value between points.
+  v_texCoord = a_texCoord;
+}
+`;
+
+      var fragmentShaderSource = `#version 300 es
+
+// fragment shaders don't have a default precision so we need
+// to pick one. highp is a good default. It means "high precision"
+precision highp float;
+
+// our texture
+uniform sampler2D u_image;
+
+// the convolution kernal data
+uniform float u_kernel[9];
+uniform float u_kernelWeight;
+
+// the texCoords passed in from the vertex shader.
+in vec2 v_texCoord;
+
+// we need to declare an output for the fragment shader
+out vec4 outColor;
+
+void main() {
+  vec2 onePixel = vec2(1) / vec2(textureSize(u_image, 0));
+
+  vec4 colorSum =
+      texture(u_image, v_texCoord + onePixel * vec2(-1, -1)) * u_kernel[0] +
+      texture(u_image, v_texCoord + onePixel * vec2( 0, -1)) * u_kernel[1] +
+      texture(u_image, v_texCoord + onePixel * vec2( 1, -1)) * u_kernel[2] +
+      texture(u_image, v_texCoord + onePixel * vec2(-1,  0)) * u_kernel[3] +
+      texture(u_image, v_texCoord + onePixel * vec2( 0,  0)) * u_kernel[4] +
+      texture(u_image, v_texCoord + onePixel * vec2( 1,  0)) * u_kernel[5] +
+      texture(u_image, v_texCoord + onePixel * vec2(-1,  1)) * u_kernel[6] +
+      texture(u_image, v_texCoord + onePixel * vec2( 0,  1)) * u_kernel[7] +
+      texture(u_image, v_texCoord + onePixel * vec2( 1,  1)) * u_kernel[8] ;
+  outColor = vec4((colorSum / u_kernelWeight).rgb, 1);
+}
+`;
+
+      function main() {
+        var image = new Image();
+        image.src = '../../asset/webgl/leaves.jpeg';
+        image.onload = function () {
+          render(image);
+        };
+      }
+
+      function render(image) {
+        // Get A WebGL context
+        /** @type {HTMLCanvasElement} */
+        var canvas = document.querySelector('#canvas3');
+        var gl = canvas.getContext('webgl2');
+        if (!gl) {
+          return;
+        }
+
+        // setup GLSL program
+        var program = createProgramFromSources(gl, [
+          vertexShaderSource,
+          fragmentShaderSource,
+        ]);
+
+        // look up where the vertex data needs to go.
+        var positionAttributeLocation = gl.getAttribLocation(
+          program,
+          'a_position'
+        );
+        var texCoordAttributeLocation = gl.getAttribLocation(
+          program,
+          'a_texCoord'
+        );
+
+        // lookup uniforms
+        var resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+        var imageLocation = gl.getUniformLocation(program, 'u_image');
+        var kernelLocation = gl.getUniformLocation(program, 'u_kernel[0]');
+        var kernelWeightLocation = gl.getUniformLocation(
+          program,
+          'u_kernelWeight'
+        );
+        var flipYLocation = gl.getUniformLocation(program, 'u_flipY');
+
+        // Create a vertex array object (attribute state)
+        var vao = gl.createVertexArray();
+
+        // and make it the one we're currently working with
+        gl.bindVertexArray(vao);
+
+        // Create a buffer and put a single pixel space rectangle in
+        // it (2 triangles)
+        var positionBuffer = gl.createBuffer();
+
+        // Turn on the attribute
+        gl.enableVertexAttribArray(positionAttributeLocation);
+
+        // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+        // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+        var size = 2; // 2 components per iteration
+        var type = gl.FLOAT; // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0; // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+          positionAttributeLocation,
+          size,
+          type,
+          normalize,
+          stride,
+          offset
+        );
+
+        // provide texture coordinates for the rectangle.
+        var texCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([
+            0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
+          ]),
+          gl.STATIC_DRAW
+        );
+
+        // Turn on the attribute
+        gl.enableVertexAttribArray(texCoordAttributeLocation);
+
+        // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
+        var size = 2; // 2 components per iteration
+        var type = gl.FLOAT; // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0; // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+          texCoordAttributeLocation,
+          size,
+          type,
+          normalize,
+          stride,
+          offset
+        );
+
+        function createAndSetupTexture(gl) {
+          var texture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+
+          // Set up texture so we can render any size image and so we are
+          // working with pixels.
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+          return texture;
+        }
+
+        // 텍스처를 생성하고 이미지를 넣습니다.
+        var originalImageTexture = createAndSetupTexture(gl);
+
+        // 텍스처에 이미지를 업로드 합니다.
+        var mipLevel = 0; // 가장 큰 mip
+        var internalFormat = gl.RGBA; // 텍스처에서 원하는 포맷
+        var srcFormat = gl.RGBA; // 제공되는 데이터 포맷
+        var srcType = gl.UNSIGNED_BYTE; // 제공되는 데이터 타입
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          mipLevel,
+          internalFormat,
+          srcFormat,
+          srcType,
+          image
+        );
+
+        // create 2 textures and attach them to framebuffers.
+        var textures = [];
+        var framebuffers = [];
+        for (var ii = 0; ii < 2; ++ii) {
+          var texture = createAndSetupTexture(gl);
+          textures.push(texture);
+
+          // make the texture the same size as the image
+          var mipLevel = 0; // the largest mip
+          var internalFormat = gl.RGBA; // format we want in the texture
+          var border = 0; // 0으로 설정해야함
+          var srcFormat = gl.RGBA; // format of data we are supplying
+          var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+          var data = null; // null = 빈 텍스처 만들기
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            mipLevel,
+            internalFormat,
+            image.width,
+            image.height,
+            border,
+            srcFormat,
+            srcType,
+            data
+          );
+
+          // Create a framebuffer
+          var fbo = gl.createFramebuffer();
+          framebuffers.push(fbo);
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+          // 텍스처를 프레임 버퍼의 색상 버퍼에 연결합니다.
+          var attachmentPoint = gl.COLOR_ATTACHMENT0;
+          gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            attachmentPoint,
+            gl.TEXTURE_2D,
+            texture,
+            mipLevel
+          );
+        }
+
+        // Bind the position buffer so gl.bufferData that will be called
+        // in setRectangle puts data in the position buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+        // Set a rectangle the same size as the image.
+        setRectangle(gl, 0, 0, image.width, image.height);
+
+        // Define several convolution kernels
+        var kernels = {
+          normal: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+          gaussianBlur: [
+            0.045, 0.122, 0.045, 0.122, 0.332, 0.122, 0.045, 0.122, 0.045,
+          ],
+          gaussianBlur2: [1, 2, 1, 2, 4, 2, 1, 2, 1],
+          gaussianBlur3: [0, 1, 0, 1, 1, 1, 0, 1, 0],
+          unsharpen: [-1, -1, -1, -1, 9, -1, -1, -1, -1],
+          sharpness: [0, -1, 0, -1, 5, -1, 0, -1, 0],
+          sharpen: [-1, -1, -1, -1, 16, -1, -1, -1, -1],
+          edgeDetect: [
+            -0.125, -0.125, -0.125, -0.125, 1, -0.125, -0.125, -0.125, -0.125,
+          ],
+          edgeDetect2: [-1, -1, -1, -1, 8, -1, -1, -1, -1],
+          edgeDetect3: [-5, 0, 0, 0, 0, 0, 0, 0, 5],
+          edgeDetect4: [-1, -1, -1, 0, 0, 0, 1, 1, 1],
+          edgeDetect5: [-1, -1, -1, 2, 2, 2, -1, -1, -1],
+          edgeDetect6: [-5, -5, -5, -5, 39, -5, -5, -5, -5],
+          sobelHorizontal: [1, 2, 1, 0, 0, 0, -1, -2, -1],
+          sobelVertical: [1, 0, -1, 2, 0, -2, 1, 0, -1],
+          previtHorizontal: [1, 1, 1, 0, 0, 0, -1, -1, -1],
+          previtVertical: [1, 0, -1, 1, 0, -1, 1, 0, -1],
+          boxBlur: [
+            0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111,
+          ],
+          triangleBlur: [
+            0.0625, 0.125, 0.0625, 0.125, 0.25, 0.125, 0.0625, 0.125, 0.0625,
+          ],
+          emboss: [-2, -1, 0, -1, 1, 1, 0, 1, 2],
+        };
+
+        var effects = [
+          { name: 'normal', on: true },
+          { name: 'gaussianBlur' },
+          { name: 'gaussianBlur2', on: true },
+          { name: 'gaussianBlur3', on: true },
+          { name: 'unsharpen' },
+          { name: 'sharpness' },
+          { name: 'sharpen' },
+          { name: 'edgeDetect' },
+          { name: 'edgeDetect2' },
+          { name: 'edgeDetect3' },
+          { name: 'edgeDetect4' },
+          { name: 'edgeDetect5' },
+          { name: 'edgeDetect6' },
+          { name: 'sobelHorizontal' },
+          { name: 'sobelVertical' },
+          { name: 'previtHorizontal' },
+          { name: 'previtVertical' },
+          { name: 'boxBlur' },
+          { name: 'triangleBlur' },
+          { name: 'emboss' },
+        ];
+
+        // Setup a ui.
+        var ui = document.querySelector('#ui1');
+        var table = document.createElement('table');
+        var tbody = document.createElement('tbody');
+        for (var ii = 0; ii < effects.length; ++ii) {
+          var effect = effects[ii];
+          var tr = document.createElement('tr');
+          var td = document.createElement('td');
+          var chk = document.createElement('input');
+          chk.value = effect.name;
+          chk.type = 'checkbox';
+          if (effect.on) {
+            chk.checked = 'true';
+          }
+          chk.onchange = drawEffects;
+          td.appendChild(chk);
+          td.appendChild(document.createTextNode(effect.name));
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        ui.appendChild(table);
+        // $('#ui table').tableDnD({ onDrop: drawEffects });
+
+        drawEffects();
+
+        function computeKernelWeight(kernel) {
+          var weight = kernel.reduce(function (prev, curr) {
+            return prev + curr;
+          });
+          return weight <= 0 ? 1 : weight;
+        }
+
+        function drawEffects() {
+          resizeCanvasToDisplaySize(gl.canvas);
+
+          // Tell WebGL how to convert from clip space to pixels
+          gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+          // Clear the canvas
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+          // Tell it to use our program (pair of shaders)
+          gl.useProgram(program);
+
+          // Bind the attribute/buffer set we want.
+          gl.bindVertexArray(vao);
+
+          // 원본 이미지를 유닛 0에서 시작
+          gl.activeTexture(gl.TEXTURE0 + 0);
+          gl.bindTexture(gl.TEXTURE_2D, originalImageTexture);
+
+          // 쉐이더에 텍스처 유닛 0에서 텍스처를 얻기 위해 전달
+          gl.uniform1i(imageLocation, 0);
+
+          // 텍스처를 그리는 동안 y축 뒤집기를 하지 않게 합니다.
+          gl.uniform1f(flipYLocation, 1);
+
+          // 적용하려는 각 효과를 반복합니다.
+          var count = 0;
+          for (var ii = 0; ii < tbody.rows.length; ++ii) {
+            var checkbox = tbody.rows[ii].firstChild.firstChild;
+            if (checkbox.checked) {
+              // 프레임 버퍼 중 하나를 그리기 위한 설정을 합니다.
+              setFramebuffer(
+                framebuffers[count % 2],
+                image.width,
+                image.height
+              );
+
+              drawWithKernel(checkbox.value);
+
+              // 다음 드로잉을 위해 방금 렌더링 한 텍스처를 사용합니다.
+              gl.bindTexture(gl.TEXTURE_2D, textures[count % 2]);
+
+              // 다음번에 다른 텍스처를 사용할 수 있도록 카운트를 증가시킵니다.
+              ++count;
+            }
+          }
+
+          // 마지막으로 캔버스에 결과를 그립니다.
+          gl.uniform1f(flipYLocation, -1); // 캔버스를 뒤집을 필요가 있습니다.
+
+          setFramebuffer(null, gl.canvas.width, gl.canvas.height);
+
+          // Clear the canvas
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+          drawWithKernel('normal');
+        }
+
+        function setFramebuffer(fbo, width, height) {
+          // 렌더링할 프레임 버퍼를 만듭니다.
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+          // 쉐이더에 프레임 버퍼의 해상도를 전달합니다.
+          gl.uniform2f(resolutionLocation, width, height);
+
+          // WebGL에 클립 공간에서 픽셀로 변환하는 방법을 전달합니다.
+          gl.viewport(0, 0, width, height);
+        }
+
+        function drawWithKernel(name) {
+          // 커널을 설정하고 가중치를 설정합니다.
+          gl.uniform1fv(kernelLocation, kernels[name]);
+          gl.uniform1f(
+            kernelWeightLocation,
+            computeKernelWeight(kernels[name])
+          );
+
+          // 사각형 그리기
+          var primitiveType = gl.TRIANGLES;
+          var offset = 0;
+          var count = 6;
+          gl.drawArrays(primitiveType, offset, count);
+        }
+      }
+
+      function setRectangle(gl, x, y, width, height) {
+        var x1 = x;
+        var x2 = x + width;
+        var y1 = y;
+        var y2 = y + height;
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
+          gl.STATIC_DRAW
+        );
+      }
+
+      main();
     </script>
   </body>
 </html>
