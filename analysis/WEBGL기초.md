@@ -448,3 +448,72 @@ var getContext = function() {  var textureUnits = [    { TEXTURE_2D: null, TEXTU
   for (var ii = 0; ii < 2; ++ii) {    gl.activeTexture(gl.TEXTURE0 + ii);    gl.bindTexture(gl.TEXTURE_2D, textures[ii]);  }
 ```
 
+
+
+## orthographic 직교 투영 (2D 투영)
+
+https://webgl2fundamentals.org/webgl/lessons/ko/webgl-3d-orthographic.html
+
+사소한 것 하나가 남았습니다. 대부분의 3d 수학 라이브러리에는 클립 공간에서 픽셀 공간으로 변환하는 `projection` 함수가 없습니다. 대신 보통 `ortho` 또는 `orthographic`이라고 정의된 함수가 있는데, 아래와 같이 생겼습니다.
+
+```js
+var m4 = {  orthographic: function(left, right, bottom, top, near, far) {    return [      2 / (right - left), 0, 0, 0,      0, 2 / (top - bottom), 0, 0,      0, 0, 2 / (near - far), 0,       (left + right) / (left - right),      (bottom + top) / (bottom - top),      (near + far) / (near - far),      1,    ];  }
+```
+
+우리가 정의한 간단한 `projection`함수는 width, height, depth만을 매개변수로 받지만, 위 함수는 좀더 일반적인 직교 투영 함수로써 left, right, bottom, top, near, far를 매개변수로 받아 좀더 유연합니다. 위 함수를 사용하여 원래 우리의 투영 함수와 동일한 결과를 얻기 위해서 아래와 같이 호출합니다.
+
+```js
+var left = 0;var right = gl.canvas.clientWidth;var bottom = gl.canvas.clientHeight;var top = 0;var near = 400;var far = -400;m4.orthographic(left, right, bottom, top, near, far);
+```
+
+
+
+
+
+## 텍스처 좌표
+
+https://webgl2fundamentals.org/webgl/lessons/ko/webgl-3d-textures.html
+
+`texture2D`: 텍스처에서 색상을 찾는 함수
+
+- gl_FragColor = texture2D(u_texture, v_texcoord);
+
+`CLAMP_TO_EDGE`: 텍스처를 특정 방향으로 반복하지 않도록 설정
+
+> 아래는 X, Y 반복 안하겠다고 설정
+
+- gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+- gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+`generateMipmap`
+
+밉맵은 점진적으로 작아지는 이미지의 모음으로, 각각은 이전 이미지 크기의 1/4입니다. 
+
+- `NEAREST` = 가장 큰 밉에서 1픽셀 선택
+- `LINEAR` = 가장 큰 밉에서 4픽셀 선택 및 블렌딩
+- `NEAREST_MIPMAP_NEAREST` = 최상의 밉을 선택하고, 밉에서 픽셀 1개를 선택
+- `LINEAR_MIPMAP_NEAREST` = 최상의 밉을 선택하고, 밉에서 픽셀 4개를 블렌딩
+- `NEAREST_MIPMAP_LINEAR` = 최상의 밉 2개를 선택하고, 각각 픽셀 1개를 선택한 다음 블렌딩
+- `LINEAR_MIPMAP_LINEAR` = 최상의 밉 2개를 선택하고, 각각 픽셀 4개를 선택한 다음 블렌딩
+
+
+
+
+
+## activeTexture
+
+frameBuffer 나 canvas 에 2개 이미지를 같이 그릴 때 여러개 활성화하고 바인딩
+
+```js
+// Tell the shader to get the texture from texture unit 0
+// set which texture units to render with.
+gl.uniform1i(u_image0Location, 0); // texture unit 0
+gl.uniform1i(u_image1Location, 1); // texture unit 1
+
+// 텍스처 유닛에 사용할 텍스처를 설정합니다.
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D, textures[0]);
+gl.activeTexture(gl.TEXTURE1);
+gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+```
+
