@@ -3,7 +3,9 @@ import { Sheep } from './sheep.js';
 export class SheepController {
   constructor() {
     this.img = new Image();
-    this.img.onload = this.loaded.bind(this);
+    this.img.onload = () => {
+      this.loaded();
+    };
     this.img.src = './sheep.png';
 
     this.items = [];
