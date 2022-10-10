@@ -12,6 +12,8 @@ export function lineCircle(x1, y1, x2, y2, cx, cy, r) {
   const px = x1 + point * (x2 - x1);
   const py = y1 + point * (y2 - y1);
 
+  // console.log('point', point, 'px', px, 'py', py, 'cx', cx, 'cy', cy);
+
   if (distance(px, py, cx, cy) < r) {
     return true;
   } else {
