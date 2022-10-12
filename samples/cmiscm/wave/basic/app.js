@@ -1,4 +1,4 @@
-import { WaveGroup } from './wavegroup.js';
+import { Wave } from './wave.js';
 
 class App {
   constructor() {
@@ -8,7 +8,7 @@ class App {
 
     this.pixelRatio = window.devicePixelRatio > 1 ? 2 : 1;
 
-    this.waveGroup = new WaveGroup();
+    this.wave = new Wave();
 
     window.addEventListener('resize', this.resize.bind(this), false);
     this.resize();
@@ -25,13 +25,13 @@ class App {
 
     this.ctx.scale(this.pixelRatio, this.pixelRatio);
 
-    this.waveGroup.resize(this.stageWidth, this.stageHeight);
+    this.wave.resize(this.stageWidth, this.stageHeight);
   }
 
   animate() {
     this.ctx.clearRect(0, 0, this.stageWidth, this.stageHeight);
 
-    this.waveGroup.draw(this.ctx);
+    this.wave.draw(this.ctx);
     window.requestAnimationFrame(this.animate.bind(this));
   }
 }
