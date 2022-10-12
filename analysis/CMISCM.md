@@ -43,8 +43,6 @@ getPointOnQuad(x1, y1, x2, y2, x3, y3, t) {
 
 
 
-
-
 ## [Leon Sans](https://www.youtube.com/watch?v=sb7v-d-R11E)
 
 0 ~ 1까지의 비율 t 값을 구하는 공식
