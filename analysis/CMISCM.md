@@ -1,3 +1,13 @@
+## 할일
+
+- Sheep 에서 베지어 곡선 그려지는 과정 Basic 으로 생성
+- Kinetic Typo #1 알파벳 생성 과정만 Basic 으로 생성
+  - 필터 적용 별도 생성
+
+
+
+
+
 ## [Sheep](https://www.youtube.com/watch?v=hCHL7sydzn0&t=361s)
 
 #### 베지어 곡선 x, y 공석
@@ -50,4 +60,8 @@ getPointOnQuad(x1, y1, x2, y2, x3, y3, t) {
 - A(t = 0) -> B(t = 1)
 
 - ((1-t) * A) + (t * B)
+
+
+
+
 
