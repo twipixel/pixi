@@ -10,7 +10,7 @@ const getExamples = (dirPath, examples = {}, files = []) => {
       getExamples(dirPath + '/' + file, examples[file], files);
     } else {
       if (path.extname(file).toLowerCase() === '.html') {
-        const filePath = path.join(__dirname, dirPath, '/', file);
+        const filePath = path.join(__dirname, dirPath, '/', file).replace(__dirname, '');
         files.push(filePath);
         examples[file] = filePath;
       }
