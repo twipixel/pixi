@@ -6,10 +6,10 @@ router.use('/dist', express.static('dist'));
 router.use('/libs', express.static('libs'));
 router.use('/asset', express.static('asset'));
 router.use('/practice', express.static('practice'));
-router.use('/samples', express.static('samples'));
+router.use('/examples', express.static('examples'));
 router.use(express.static('server/public'));
 router.get('/', function (req, res) {
-  res.redirect('/samples/index.html');
+  res.redirect('/examples/index.html');
 });
 
 module.exports = router;

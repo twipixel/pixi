@@ -1,0 +1,140 @@
+{
+  "examples": {
+    "cmiscm": {
+      "colliding-ball": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/colliding-ball/index.html"
+      },
+      "dot-painting": {
+        "dot-painting-bw": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/dot-painting/dot-painting-bw/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/dot-painting/index.html"
+      },
+      "glow-gradient": {
+        "basic": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/glow-gradient/basic/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/glow-gradient/index.html"
+      },
+      "kinetic-typo-1": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-1/index.html"
+      },
+      "kinetic-typo-2": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-2/index.html"
+      },
+      "kinetic-typo-3": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-3/index.html"
+      },
+      "kinetic-typo-4": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-4/index.html"
+      },
+      "kinetic-typo-5": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-5/index.html"
+      },
+      "kinetic-typo-6": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-6/index.html"
+      },
+      "kinetic-typo-7": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-7/index.html"
+      },
+      "line-string": {
+        "basic": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/line-string/basic/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/line-string/index.html"
+      },
+      "rotate": {
+        "circle": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/circle/index.html"
+        },
+        "circle-box": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/circle-box/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/index.html",
+        "polygon": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/polygon/index.html"
+        }
+      },
+      "sheep": {
+        "basic": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/sheep/basic/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/sheep/index.html"
+      },
+      "swing-box": {
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/swing-box/index.html"
+      },
+      "wave": {
+        "basic": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/basic/index.html"
+        },
+        "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/index.html",
+        "single": {
+          "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/single/index.html"
+        }
+      }
+    },
+    "index.html": "/Users/user/IdeaProjects/pixi/scripts/examples/index.html",
+    "pixi": {
+      "graphics-canvas.html": "/Users/user/IdeaProjects/pixi/scripts/examples/pixi/graphics-canvas.html"
+    },
+    "practice": {
+      "display-object-basic.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-basic.html",
+      "display-object-click.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-click.html",
+      "display-object-image.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-image.html",
+      "display-object-multi.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-multi.html",
+      "event.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/event.html",
+      "kvo.html": "/Users/user/IdeaProjects/pixi/scripts/examples/practice/kvo.html"
+    },
+    "webgl": {
+      "webgl-basic-1.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-basic-1.html",
+      "webgl-basic-2.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-basic-2.html",
+      "webgl-drawimage.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-drawimage.html",
+      "webgl-image.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-image.html",
+      "webgl-matrix-1.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-1.html",
+      "webgl-matrix-2.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-2.html",
+      "webgl-matrix-stack.html": "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-stack.html"
+    }
+  },
+  "files": [
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/colliding-ball/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/dot-painting/dot-painting-bw/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/dot-painting/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/glow-gradient/basic/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/glow-gradient/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-1/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-2/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-3/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-4/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-5/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-6/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/kinetic-typo-7/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/line-string/basic/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/line-string/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/circle/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/circle-box/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/rotate/polygon/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/sheep/basic/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/sheep/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/swing-box/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/basic/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/cmiscm/wave/single/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/index.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/pixi/graphics-canvas.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-basic.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-click.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-image.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/display-object-multi.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/event.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/practice/kvo.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-basic-1.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-basic-2.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-drawimage.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-image.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-1.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-2.html",
+    "/Users/user/IdeaProjects/pixi/scripts/examples/webgl/webgl-matrix-stack.html"
+  ]
+}
