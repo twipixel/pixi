@@ -87,7 +87,7 @@ export const examples = {
   "webgl": {
     "webgl-basic-1.html": "/examples/webgl/webgl-basic-1.html",
     "webgl-basic-2.html": "/examples/webgl/webgl-basic-2.html",
-    "webgl-drawimage.html": "/examples/webgl/webgl-drawimage.html",
+    "webgl-draw-image.html": "/examples/webgl/webgl-draw-image.html",
     "webgl-image.html": "/examples/webgl/webgl-image.html",
     "webgl-matrix-1.html": "/examples/webgl/webgl-matrix-1.html",
     "webgl-matrix-2.html": "/examples/webgl/webgl-matrix-2.html",
@@ -128,7 +128,7 @@ export const examples = {
   "/examples/practice/kvo.html",
   "/examples/webgl/webgl-basic-1.html",
   "/examples/webgl/webgl-basic-2.html",
-  "/examples/webgl/webgl-drawimage.html",
+  "/examples/webgl/webgl-draw-image.html",
   "/examples/webgl/webgl-image.html",
   "/examples/webgl/webgl-matrix-1.html",
   "/examples/webgl/webgl-matrix-2.html",
