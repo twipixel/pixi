@@ -1,5 +1,3 @@
-import { pointCircle } from './utils.js';
-
 export class Text {
   constructor() {
     this.canvas = document.createElement('canvas');

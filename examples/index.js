@@ -50,7 +50,7 @@ const createExamples = () => {
     if (subTitle) {
       const subField = document.createElement('p');
       subField.style.width = 'max-content';
-      subField.style.fontSize = '12px';
+      subField.style.fontSize = '11px';
       subField.style.padding = '0px 2px 0px 2px';
       subField.style.margin = '-14px 0px 0px 0px';
       subField.style.backgroundColor = '#000000';
