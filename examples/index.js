@@ -2,7 +2,7 @@ import {files} from './examples.js';
 
 const container = document.getElementById('container');
 
-const createExamples = () => {
+const createExamples = (examples = []) => {
   for (let i = 0; i < files.length; i+=1) {
     const url = files[i];
     const paths = url.split('/');
@@ -35,6 +35,16 @@ const createExamples = () => {
     item.style.overflow = 'hidden';
     item.style.position = 'relative';
     item.style.backgroundColor = '#fcee09';
+    item.style.transform = 'scale(1.0)';
+    item.style.transition = '0.15s transform';
+    item.addEventListener('mouseenter', () => {
+      item.style.zIndex = 1;
+      item.style.transform = 'scale(1.08'
+    });
+    item.addEventListener('mouseleave', () => {
+      item.style.zIndex = 0;
+      item.style.transform = 'scale(1.0'
+    });
 
     const titleArea = document.createElement('div');
     titleArea.style.margin = '24px 0px 0px 26px';
@@ -102,7 +112,18 @@ const createExamples = () => {
     tagArea.appendChild(diagonalBack);
 
     container.appendChild(item);
+    examples.push(item);
   }
+  return examples;
 }
 
-createExamples();
+const resize = (examples) => {
+
+};
+
+const examples = createExamples();
+
+
+window.addEventListener('resize', () => {
+
+});

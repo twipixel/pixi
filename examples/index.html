@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Experimental</title>
+    <title>Examples</title>
 
     <style>
       @font-face {
@@ -25,118 +25,58 @@
 
       #container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(20%, auto));
+        /* grid-template-columns: repeat(4, 0fr); */
       }
 
-      /* #projects {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        line-height: 0;
-      }
-      #projects a {
-        overflow: hidden;
-      }
-      #projects a img {
-        width: 100%;
-        transform: scale(1);
-        transition: 0.15s transform;
-      }
-      #projects a:hover img {
-        transform: scale(1.08);
-      }
 
-      @media all and (min-width: 1500px) {
-        #projects {
-          grid-template-columns: repeat(7, 1fr);
+      @media all and (min-width: 2000px) {
+        #container {
+          grid-template-columns: repeat(11, 0fr);
         }
       }
 
-      @media all and (min-width: 1700px) {
-        :root {
-          --panel-width: 360px;
-          --font-size: 18px;
-          --line-height: 28px;
-          --header-height: 56px;
-          --icon-size: 24px;
-        }
-        #projects {
-          grid-template-columns: repeat(8, 1fr);
+      @media all and (min-width: 1800px) {
+        #container {
+          grid-template-columns: repeat(10, 0fr);
         }
       }
 
-      @media all and (min-width: 1900px) {
-        #projects {
-          grid-template-columns: repeat(9, 1fr);
+      @media all and (min-width: 1600px) {
+        #container {
+          grid-template-columns: repeat(8, 0fr);
         }
       }
 
-      @media all and (max-width: 1300px) {
-        #projects {
-          grid-template-columns: repeat(6, 1fr);
+      @media all and (max-width: 1400px) {
+        #container {
+          grid-template-columns: repeat(7, 0fr);
         }
       }
 
-      @media all and (max-width: 1100px) {
-        #projects {
-          grid-template-columns: repeat(5, 1fr);
+      @media all and (max-width: 1200px) {
+        #container {
+          grid-template-columns: repeat(6, 0fr);
         }
       }
 
-      @media all and (max-width: 900px) {
-        #projects {
-          grid-template-columns: repeat(4, 1fr);
+      @media all and (max-width: 1000px) {
+        #container {
+          grid-template-columns: repeat(5, 0fr);
         }
       }
 
-      @media all and (max-width: 700px) {
-        #projects {
-          grid-template-columns: repeat(3, 1fr);
+      @media all and (max-width: 800px) {
+        #container {
+          grid-template-columns: repeat(4, 0fr);
         }
       }
 
-      .card {
-        border-radius: 3px;
-        overflow: hidden;
-        background-color: var(--secondary-background-color);
-        padding-bottom: 6px;
-        margin-bottom: 16px;
+      @media all and (max-width: 600px) {
+        #container {
+          grid-template-columns: repeat(3, 0fr);
+        }
       }
 
-      .card.selected {
-        box-shadow: 0 0 0 3px var(--color-blue);
-        text-decoration: none !important;
-      }
-
-      .card .cover {
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        position: relative;
-        overflow: hidden;
-      }
-
-      .card .cover img {
-        position: absolute;
-        width: 100%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      .card .title {
-        padding: 8px 12px 4px;
-        font-size: calc(var(--font-size) - 1px);
-        font-weight: 500;
-        line-height: calc(var(--line-height) - 6px);
-      }
-
-      .card .tag {
-        background-color: var(--background-color);
-        color: var(--color-blue);
-        margin-left: 6px;
-        padding: 1px 6px 2px;
-        border-radius: 2px;
-        font-size: calc(var(--font-size) - 2px);
-        line-height: calc(var(--line-height) - 6px);
-      } */
     </style>
   </head>
   <body>
