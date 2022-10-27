@@ -7,6 +7,7 @@ const itemHeight = 111;
 const itemRatio = 0.616666667;
 const container = document.getElementById('container');
 const gradientColor = ['#1c1b4d', '#b80e65', '#1791b1'];
+const cyberpunkColor = ['#00f0ff', '#04CDEB', '#FF003C', '#F20371', '#FB30E0', '#EA00D9', '#770DFF'];
 
 const shuffle = (array) => {
   return array.slice().sort(() => Math.random() - 0.5);
@@ -40,11 +41,20 @@ const motionText = (text, t) => {
 }
 
 const createExamples = (items = []) => {
+  const tagColor = {};
+  const categoryColor = cyberpunkColor.slice();
+
   for (let i = 0; i < files.length; i+=1) {
     const url = files[i];
     const paths = url.split('/');
     let [category, example, subExample = ''] = paths.filter(path => path && path !== 'examples');
     category = category.toUpperCase();
+
+    if (!tagColor[category]) {
+      const randomColor = shuffle(categoryColor)[0];
+      tagColor[category] = randomColor;
+      categoryColor.splice(categoryColor.indexOf(randomColor), 1);
+    }
 
     const {title, subTitle} = (() => {
       example = example.toUpperCase().replaceAll(/-[A-Z0-9]|_[A-Z0-9]/g, (str) => ` ${str[1].toUpperCase()}`);
@@ -78,13 +88,16 @@ const createExamples = (items = []) => {
 
     const titleArea = document.createElement('div');
     titleArea.style.margin = '24px 0px 0px 26px';
+    titleArea.style.padding = '0px 26px 0px 0px';
+    titleArea.style.transform = 'translate(0px, 0px)';
+    titleArea.style.transition = '0.8s transform';
     item.appendChild(titleArea);
 
     const mainField = document.createElement('p');
-    mainField.style.padding = '0px 24px 0px 0px';
+    // mainField.style.border = 'solid';
     mainField.style.fontSize = '16px';
     mainField.style.color = '#000000';
-    mainField.title = title;
+    mainField.style.overflowWrap = 'break-word';
     mainField.innerText = title;
     titleArea.appendChild(mainField);
 
@@ -103,45 +116,45 @@ const createExamples = (items = []) => {
     const tagArea = document.createElement('div');
     tagArea.id = 'tagArea';
     tagArea.style.position = 'absolute';
-    tagArea.style.right = '14px';
-    tagArea.style.bottom = '0px';
-    tagArea.style.transfrom = 'scale(1.0)';
-    tagArea.style.transition = '0.3s trasform';
+    tagArea.style.right = '26px';
+    tagArea.style.bottom = '8px';
+    tagArea.style.transform = 'translate(0px, 0px)';
+    tagArea.style.transition = '0.8s transform';
     item.appendChild(tagArea);
-
-    const diagonalFront = document.createElement('p');
-    // diagonalFront.style.opacity = 0.5;
-    // diagonalFront.style.border = 'solid red 1px';
-    diagonalFront.style.float = 'left';
-    diagonalFront.style.color = '#fcee09';
-    diagonalFront.style.background = '#fcee09';
-    diagonalFront.style.width = 'max-content';
-    diagonalFront.style.fontSize = '14px';
-    diagonalFront.style.transform = 'translate(4px, -6px) scale(1.3) rotate(35deg)';
-    diagonalFront.innerText = 'O';
-    tagArea.appendChild(diagonalFront);
 
     const tagField = document.createElement('p');
     tagField.style.float = 'left';
     tagField.style.width = 'max-content';
     tagField.style.fontSize = '12px';
-    tagField.style.padding = `0px 12px 0px 12px`;
-    tagField.style.color = '#000000';
-    tagField.style.background = '#00f0ff';
+    tagField.style.padding = `0px 0px 0px 0px`;
+    tagField.style.color = '#fff';
+    tagField.style.background = tagColor[category];
     tagField.innerText = category;
     tagArea.appendChild(tagField);
 
-    const diagonalBack = document.createElement('p');
+    // const diagonalFront = document.createElement('p');
+    // diagonalFront.style.opacity = 0.5;
+    // diagonalFront.style.border = 'solid red 1px';
+    // diagonalFront.style.float = 'left';
+    // diagonalFront.style.color = '#fcee09';
+    // diagonalFront.style.background = '#fcee09';
+    // diagonalFront.style.width = 'max-content';
+    // diagonalFront.style.fontSize = '14px';
+    // diagonalFront.style.transform = 'translate(4px, -6px) scale(1.3) rotate(35deg)';
+    // diagonalFront.innerText = 'O';
+    // tagArea.appendChild(diagonalFront);
+
+    // const diagonalBack = document.createElement('p');
     // diagonalBack.style.opacity = 0.5;
     // diagonalBack.style.border = 'solid red 1px';
-    diagonalBack.style.float = 'left';
-    diagonalBack.style.color = '#fcee09';
-    diagonalBack.style.background = '#fcee09';
-    diagonalBack.style.width = 'max-content';
-    diagonalBack.style.fontSize = '14px';
-    diagonalBack.style.transform = 'translate(-5px, 0px) scale(1.3) rotate(35deg)';
-    diagonalBack.innerText = 'O';
-    tagArea.appendChild(diagonalBack);
+    // diagonalBack.style.float = 'left';
+    // diagonalBack.style.color = '#fcee09';
+    // diagonalBack.style.background = '#fcee09';
+    // diagonalBack.style.width = 'max-content';
+    // diagonalBack.style.fontSize = '14px';
+    // diagonalBack.style.transform = 'translate(-5px, 0px) scale(1.3) rotate(35deg)';
+    // diagonalBack.innerText = 'O';
+    // tagArea.appendChild(diagonalBack);
 
     item.addEventListener('mouseenter', () => {
       item.style.zIndex = 1;
@@ -153,49 +166,60 @@ const createExamples = (items = []) => {
       item.style.backgroundSize = '400% 400%';
       item.style.animation = 'gradient 15s ease infinite';
       item.style.boxShadow = `10px 10px 54px -6px rgba(0,0,0,0.75)`;
-
       mainField.style.color = '#fcee09';
-      diagonalFront.style.display = 'none';
-      diagonalBack.style.display = 'none';
-      const mainTextMotion = Be.tween(item, {easing: 1}, {easing: 0}, 0.5, Back.easeOut);
+      // diagonalFront.style.display = 'none';
+      // diagonalBack.style.display = 'none';
+      const mainTextMotion = Be.tween(item, {easing: 1}, {easing: 0}, 0.5, Back.easeIn);
       mainTextMotion.onUpdate = () => {
-        const { target } = mainTextMotion;
+        const { target, isPlaying } = mainTextMotion;
         const { easing } = target;
+        if (!isPlaying) {
+          const titleAreaHeight = titleArea.offsetHeight;
+          const fontSize = mainField.style.fontSize;
+          const lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
+          const lines = Math.floor(titleAreaHeight / lineHeight);
+          const maxTitle = lines >= 3 || lines >= 2 && subTitle;
+          const titleX = maxTitle ? -4 : 8;
+          const titleY = maxTitle ? -4 : 8;
+          const tagX = maxTitle ? 4 : -16;
+          const tagY = maxTitle ? 4 : -8;
+
+          titleArea.style.padding = '0px 46px 0px 0px';
+          titleArea.style.transform = `translate(${titleX}px, ${titleY}px)`;
+          tagArea.style.transform = `translate(${tagX}px, ${tagY}px)`;
+        }
         mainField.innerText = motionText(title, easing);
       };
 
-      const subTextMotion = Be.tween(tagField, {easing: 1}, {easing: 0}, 0.3, Back.easeIn);
-      subTextMotion.onPlay = () => {
-        tagArea.style.transform = 'scale(4.0)';
-        tagArea.style.transition = '0.3s transform';
-      };
+      const subTextMotion = Be.tween(tagField, {easing: 1}, {easing: 0}, 0.5, Back.easeIn);
+
       subTextMotion.onUpdate = () => {
         const { target } = subTextMotion;
         const { easing } = target;
         tagField.innerText = motionText(category, easing);
       };
-      subTextMotion.onComplete = () => {
-        tagArea.style.transform = 'scale(1.0)';
-        tagArea.style.transition = '0.3s transform';
-      }
 
       const serial = Be.serial(mainTextMotion, subTextMotion);
       serial.play();
 
       const leaveListener = () => {
+        serial.stop();
         item.id = 'item';
         item.style.zIndex = 0;
         item.style.transform = 'scale(1.0)';
-        item.style.transition = '0.3s transform';
         item.style.background = '#fcee09';
         item.style.animation = '';
         item.style.boxShadow = '';
         mainField.style.color = '#000000';
         mainField.style.textShadow = '';
-        mainField.innerText = mainField.title;
-        diagonalFront.style.display = '';
-        diagonalBack.style.display = '';
+        mainField.innerText = title;
+        tagField.innerText = category;
+        titleArea.style.padding = '0px 26px 0px 0px';
+        titleArea.style.transform = 'translate(0px, 0px)';
+        tagArea.style.transform = 'translate(0px, 0px)';
         item.removeEventListener('mouseleave', leaveListener);
+        // diagonalFront.style.display = '';
+        // diagonalBack.style.display = '';
       }
 
       item.addEventListener('mouseleave', leaveListener);

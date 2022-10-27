@@ -79,6 +79,7 @@ export const examples = {
   "practice": {
     "display-object-basic.html": "/examples/practice/display-object-basic.html",
     "display-object-click.html": "/examples/practice/display-object-click.html",
+    "display-object-click.html": "/examples/practice/display-object-click.html",
     "display-object-image.html": "/examples/practice/display-object-image.html",
     "display-object-multi.html": "/examples/practice/display-object-multi.html",
     "event.html": "/examples/practice/event.html",
@@ -96,7 +97,14 @@ export const examples = {
 };
   export const files = [
   "/examples/cmiscm/colliding-ball/index.html",
-  "/examples/cmiscm/dot-painting/dot-painting-bw/index.html",
+  "/examples/cmiscm/display-object-click/display-object-click/index.html",
+  "/examples/cmiscm/AAAAAAAAAAAAAAA/dot-painting-bw/index.html",
+  "/examples/cmiscm/AAAAAAAAAA AAAAAA/dot-painting-bw/index.html",
+  "/examples/cmiscm/AAAAAAAAAAAAAAAAA/dot-painting-bw/index.html",
+  "/examples/cmiscm/AAAAAAAAAAAAAAAAAA/dot-painting-bw/index.html",
+  "/examples/cmiscm/AAAAAAAAAAAAAAAAAAAA/dot-painting-bw/index.html",
+  "/examples/cmiscm/dot-painting-super-painting/dot-painting-bw/index.html",
+  "/examples/cmiscm/dot-painting-super-painting-ultra-painting/dot-painting-bw/index.html",
   "/examples/cmiscm/dot-painting/index.html",
   "/examples/cmiscm/glow-gradient/basic/index.html",
   "/examples/cmiscm/glow-gradient/index.html",
