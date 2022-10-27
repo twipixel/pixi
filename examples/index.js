@@ -1,8 +1,24 @@
 import {files} from './examples.js';
 
+
+let stageWidth = 0, items = [];
+
+const itemWidth = 180;
+const itemHeight = 111;
+const itemRatio = 0.616666667;
 const container = document.getElementById('container');
 
-const createExamples = (examples = []) => {
+const debounce = (callback, limit = 100) => {
+  let timeout
+  return function(...args) {
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+          callback.apply(this, args)
+      }, limit)
+  }
+}
+
+const createExamples = (items = []) => {
   for (let i = 0; i < files.length; i+=1) {
     const url = files[i];
     const paths = url.split('/');
@@ -29,8 +45,8 @@ const createExamples = (examples = []) => {
     item.id = 'item';
     item.href = url;
     item.target = '_blank';
-    item.style.width = '180px';
-    item.style.height = '111px';
+    item.style.width = `${itemWidth}px`;
+    item.style.height = `${itemHeight}px`;
     item.style.border = 'solid #04080B 1px';
     item.style.overflow = 'hidden';
     item.style.position = 'relative';
@@ -112,18 +128,34 @@ const createExamples = (examples = []) => {
     tagArea.appendChild(diagonalBack);
 
     container.appendChild(item);
-    examples.push(item);
+    items.push(item);
   }
-  return examples;
+  return items;
 }
 
-const resize = (examples) => {
 
+const resize = (items) => {
+  stageWidth = document.body.clientWidth;
+
+  const colums = Math.floor(stageWidth / itemWidth);
+  const rest = stageWidth - itemWidth * colums;
+  const some = Math.floor(rest / colums);
+
+  container.style.gridTemplateColumns = `repeat(${colums}, 0fr)`;
+  items.forEach(item => {
+    item.style.width = `${itemWidth + some}px`;
+    item.style.height = `${itemWidth * itemRatio}px`;
+  });
 };
 
-const examples = createExamples();
+
+window.onload = () => {
+  items = createExamples();
+  resize(items);
+}
+
+window.onresize = debounce(() => {
+  resize(items);
+}, 300);
 
 
-window.addEventListener('resize', () => {
-
-});
