@@ -7,7 +7,7 @@ const itemHeight = 111;
 const itemRatio = 0.616666667;
 const container = document.getElementById('container');
 const gradientColor = ['#1c1b4d', '#b80e65', '#1791b1'];
-const cyberpunkColor = ['#00f0ff', '#04CDEB', '#FF003C', '#F20371', '#FB30E0', '#EA00D9', '#770DFF'];
+const cyberpunkColor = ['#00f0ff', '#04CDEB', '#586AE2', '#2A2356', '#FF003C', '#F20371', '#FB30E0', '#EA00D9', '#770DFF'];
 
 const shuffle = (array) => {
   return array.slice().sort(() => Math.random() - 0.5);
@@ -97,6 +97,7 @@ const createExamples = (items = []) => {
     // mainField.style.border = 'solid';
     mainField.style.fontSize = '16px';
     mainField.style.color = '#000000';
+    // mainField.style.background = tagColor[category];
     mainField.style.overflowWrap = 'break-word';
     mainField.innerText = title;
     titleArea.appendChild(mainField);
