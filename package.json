@@ -45,7 +45,8 @@
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish",
     "postversion": "npm run clean && npm run build && npm run lib && npm run unit-test",
-    "postpublish": "git push && git push --tags"
+    "postpublish": "git push && git push --tags",
+    "create": "node ./scripts/create-examples.js"
   },
   "files": [
     "dist/",
