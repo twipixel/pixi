@@ -3,8 +3,7 @@ node version v12.17.0
 
 ```js
 npm i
-npm audit fix --force
-npm run watch
-node app
+npm run ex // 예제 테스트
+npm run watch // pixi test
 ```
 
