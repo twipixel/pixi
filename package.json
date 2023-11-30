@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
     "prestart": "npm run clean",
-    "start": "npm run watch && node app && npm run open",
+    "start": "npm run watch & npm run ex",
     "ex": "npm run node & npm run open",
     "node": "node app",
     "open": "http-server public -a localhost -p 3000 -o",
