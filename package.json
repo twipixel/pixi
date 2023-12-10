@@ -21,7 +21,7 @@
     "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
     "prestart": "npm run clean",
     "start": "npm run watch & npm run ex",
-    "ex": "npm run node & npm run open",
+    "ex": "npm run create & npm run node & npm run open",
     "node": "node app",
     "open": "http-server public -a localhost -p 3000 -o",
     "watch": "npm run dist -- --watch",
