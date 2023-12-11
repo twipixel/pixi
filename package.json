@@ -20,8 +20,8 @@
   "scripts": {
     "clean": "rimraf dist lib && mkdirp dist && mkdir lib",
     "prestart": "npm run clean",
-    "start": "npm run watch & npm run ex",
-    "ex": "npm run create & npm run node & npm run open",
+    "start": "npm run watch && npm run ex",
+    "ex": "npm run create && npm run node && npm run open",
     "node": "node app",
     "open": "http-server public -a localhost -p 3000 -o",
     "watch": "npm run dist -- --watch",
@@ -81,6 +81,7 @@
     "eslint": "^8.2.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-node": "^0.3.9",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.2.1",
